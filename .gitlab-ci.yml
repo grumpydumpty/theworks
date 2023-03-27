@@ -1,0 +1,22 @@
+build:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [""]
+  before_script:
+    # add harbor cert to kaniko
+    - echo -e ${HARBOR_CERT} >> /kaniko/ssl/certs/sydeng.vmware.com.crt
+    # add harbor auth to docker
+    - AUTH=$(printf "%s:%s" ${HARBOR_USER} ${HARBOR_PASSWORD} | base64 | tr -d '\n')
+    - echo "{\"auths\":{\"${HARBOR_HOST}\":{\"username\":\"${HARBOR_USER}\",\"password\":\"${HARBOR_PASSWORD}\",\"email\":\"${HARBOR_EMAIL}\",\"auth\":\"${AUTH}\"}}}" > /kaniko/.docker/config.json
+  variables:
+    IMAGE_NAME: "theworks"
+    IMAGE_TAG: "dev"
+  script:
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --cache
+      --cache-copy-layers
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "${HARBOR_HOST}/library/${IMAGE_NAME}:${IMAGE_TAG}"
+      # --destination "${HARBOR_HOST}/library/${IMAGE_NAME}:latest"
