@@ -30,7 +30,7 @@ build:
       --label ${LABEL_PREFIX}.builder.name="${GITLAB_USER_NAME}"
       --label ${LABEL_PREFIX}.builder.url="${CI_SERVER_URL}/${GITLAB_USER_LOGIN}"
       --label ${LABEL_PREFIX}.git.commit="${CI_COMMIT_SHORT_SHA}"
-      --label ${LABEL_PREFIX}.git.repo="${CI_REPOSITORY_URL}"
+      --label ${LABEL_PREFIX}.git.repo="${CI_PROJECT_URL}"
       --label ${LABEL_PREFIX}.project="${CI_PROJECT_PATH}"
       --label ${LABEL_PREFIX}.released="${CI_COMMIT_TIMESTAMP}"
       --destination "${HARBOR_HOST}/library/${IMAGE_NAME}:${IMAGE_TAG}"
