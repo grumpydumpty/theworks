@@ -16,6 +16,14 @@ TAG=dev
 # image version
 VERSION=0.0.1
 
+# project info
+PROJECT="sydney/containers/theworks"
+
+# maintainer info
+MAIN_USER="Richard Croft"
+MAIN_EMAIL="rcroft@vmware.com"
+MAIN_URL="https://gitlab.eng.vmware.com/rcroft"
+
 # below needs to match "ARG LABEL_PREFIX=" in Dockerfile
 LABEL_PREFIX=com.vmware.eocto
 

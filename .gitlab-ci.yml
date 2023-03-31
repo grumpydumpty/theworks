@@ -4,12 +4,20 @@ build:
     name: gcr.io/kaniko-project/executor:v1.9.0-debug
     entrypoint: [""]
   before_script:
+    # dump gitlab/harbor env vars
+    # - "echo #############################################################################"
+    # - |
+    #   echo "| GitLab Env Var        | Value                 |" && \
+    #   echo "|-----------------------|-----------------------|" && \
+    #   set | grep -e '^CI_' -e '^GITLAB_' -e '^HARBOR_' | sed -e 's/\(.*\)=\(.*\)/| \1 | \2 |/'
+    # - "echo #############################################################################"
     # add harbor cert to kaniko
     - echo -e ${HARBOR_CERT} >> /kaniko/ssl/certs/sydeng.vmware.com.crt
     # add harbor auth to docker
     - AUTH=$(printf "%s:%s" ${HARBOR_USER} ${HARBOR_PASSWORD} | base64 | tr -d '\n')
     - echo "{\"auths\":{\"${HARBOR_HOST}\":{\"username\":\"${HARBOR_USER}\",\"password\":\"${HARBOR_PASSWORD}\",\"email\":\"${HARBOR_EMAIL}\",\"auth\":\"${AUTH}\"}}}" > /kaniko/.docker/config.json
   variables:
+    LABEL_PREFIX: "com.vmware.eocto"
     IMAGE_NAME: "theworks"
     IMAGE_TAG: "dev"
   script:
@@ -18,5 +26,12 @@ build:
       --cache
       --cache-copy-layers
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --label ${LABEL_PREFIX}.builder.email="${GITLAB_USER_EMAIL}"
+      --label ${LABEL_PREFIX}.builder.name="${GITLAB_USER_NAME}"
+      --label ${LABEL_PREFIX}.builder.url="${CI_SERVER_URL}/${GITLAB_USER_LOGIN}"
+      --label ${LABEL_PREFIX}.git.commit="${CI_COMMIT_SHORT_SHA}"
+      --label ${LABEL_PREFIX}.git.repo="${CI_REPOSITORY_URL}"
+      --label ${LABEL_PREFIX}.project="${CI_PROJECT_PATH}"
+      --label ${LABEL_PREFIX}.released="${CI_COMMIT_TIMESTAMP}"
       --destination "${HARBOR_HOST}/library/${IMAGE_NAME}:${IMAGE_TAG}"
       # --destination "${HARBOR_HOST}/library/${IMAGE_NAME}:latest"
