@@ -1,4 +1,4 @@
-FROM photon:4.0
+FROM photon:5.0
 
 # set argument defaults
 ARG OS_ARCH="amd64"
