@@ -25,7 +25,7 @@ WORKDIR /root
 
 # update repositories, install packages, and then clean up
 RUN tdnf update -y && \
-    # grab what we via stand packages
+    # grab what we can via standard packages
     tdnf install -y ansible cdrkit git wget openssh tar unzip && \
     # grab vsphere kubectl plugins
     curl -skSLo vsphere-plugin.zip https://${TANZU}/wcp/plugin/linux-${OS_ARCH}/vsphere-plugin.zip && \
