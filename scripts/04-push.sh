@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./00-env.sh
+source ./scripts/00-env.sh
 
 #############################################################################
 # tag and push the image to public repository

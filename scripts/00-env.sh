@@ -27,6 +27,12 @@ MAIN_URL="https://gitlab.eng.vmware.com/rcroft"
 # below needs to match "ARG LABEL_PREFIX=" in Dockerfile
 LABEL_PREFIX=com.vmware.eocto
 
+# domain name for container hostname
+DOMAIN="lab.net"
+
+# working dir within the container
+WORKDIR="/workspace"
+
 # repository to push image to
 #REPO=harbor.sydeng.vmware.com/rcroft
 REPO=harbor.sydeng.vmware.com/library

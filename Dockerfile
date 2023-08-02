@@ -42,11 +42,11 @@ RUN tdnf update -y && \
     # grab what we can via standard packages
     tdnf install -y ansible bash ca-certificates cdrkit curl diffutils gawk git htop mc nodejs openssh python3 python3-jinja2 python3-paramiko python3-pip python3-pyyaml python3-resolvelib python3-xml shadow tar tmux unzip && \
     # add user/group
-    useradd -u ${USER_ID} -m ${USER} && \
-    chown -R ${USER_ID}:${GROUP_ID} /home/${USER} && \
+    useradd -u ${USER_ID} -g ${GROUP} -m ${USER} && \
+    chown -R ${USER}:${GROUP} /home/${USER} && \
     # add /workspace and give user permissions
     mkdir -p /workspace && \
-    chown -R ${USER_ID}:${GROUP_ID} /workspace && \
+    chown -R ${USER}:${GROUP} /workspace && \
     # set git config
     #git config --global --add safe.directory /workspace && \
     echo -e "[safe]\n\tdirectory=/workspace" > /etc/gitconfig && \
