@@ -26,7 +26,9 @@ docker build                                                                    
 echo
 echo "#### Labels ####"
 echo
+# when jq not installed
 #docker inspect $IMAGE:$TAG --format '{{ json .Config.Labels }}' | sed 's/,/\n/g; s/{//g; s/}//g; s/"//g'
+# when jq installed
 docker inspect $IMAGE:$TAG --format '{{ json .Config.Labels }}' | jq
 echo
 
