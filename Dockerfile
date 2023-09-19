@@ -7,9 +7,9 @@ ARG K9S_VERSION="0.27.4"
 ARG LAZYGIT_VERSION="0.39.4"
 ARG LAZYDOCKER_VERSION="0.21.0"
 ARG HELM_VERSION="3.11.2"
-ARG PACKER_VERSION="1.8.6"
+ARG PACKER_VERSION="1.9.4"
 ARG TERRAFORM_VERSION="1.4.5"
-ARG VSPHERE_PLUGIN_VERSION="1.1.1"
+ARG VSPHERE_PLUGIN_VERSION="1.2.1"
 ARG TANZU=10.109.195.161
 ARG USER=vlabs
 ARG USER_ID=1280
@@ -40,7 +40,7 @@ ENV LC_ALL=en_US.utf-8
 # update repositories, install packages, and then clean up
 RUN tdnf update -y && \
     # grab what we can via standard packages
-    tdnf install -y ansible bash ca-certificates cdrkit curl diffutils gawk git htop mc nodejs openssh python3 python3-jinja2 python3-paramiko python3-pip python3-pyyaml python3-resolvelib python3-xml shadow tar tmux unzip && \
+    tdnf install -y ansible bash ca-certificates cdrkit curl diffutils gawk git htop jq mc nodejs openssh python3 python3-jinja2 python3-paramiko python3-pip python3-pyyaml python3-resolvelib python3-xml shadow tar tmux unzip && \
     # add user/group
     useradd -u ${USER_ID} -g ${GROUP} -m ${USER} && \
     chown -R ${USER}:${GROUP} /home/${USER} && \
