@@ -1,7 +1,7 @@
 build:
   stage: build
   image:
-    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   before_script:
     # dump gitlab/harbor env vars
@@ -25,6 +25,7 @@ build:
       --context "${CI_PROJECT_DIR}"
       --cache
       --cache-copy-layers
+      --compressed-caching=false
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
       --label ${LABEL_PREFIX}.builder.email="${GITLAB_USER_EMAIL}"
       --label ${LABEL_PREFIX}.builder.name="${GITLAB_USER_NAME}"
