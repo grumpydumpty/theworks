@@ -19,7 +19,7 @@ ARG GROUP_ID=100
 
 # add metadata via labels
 # LABEL ${LABEL_PREFIX}.version="0.0.1"
-# LABEL ${LABEL_PREFIX}.git.repo="git@gitlab.eng.vmware.com:sydney/commonpool/containers/thework.git"
+# LABEL ${LABEL_PREFIX}.git.repo="git@gitlab.eng.vmware.com:sydney/containers/theworks.git"
 # LABEL ${LABEL_PREFIX}.git.commit="DEADBEEF"
 # LABEL ${LABEL_PREFIX}.maintainer.name="Richard Croft"
 # LABEL ${LABEL_PREFIX}.maintainer.email="rcroft@vmware.com"
@@ -40,7 +40,7 @@ ENV LC_ALL=en_US.utf-8
 # update repositories, install packages, and then clean up
 RUN tdnf update -y && \
     # grab what we can via standard packages
-    tdnf install -y ansible bash ca-certificates cdrkit curl diffutils gawk git htop jq mc nodejs openssh python3 python3-jinja2 python3-paramiko python3-pip python3-pyyaml python3-resolvelib python3-xml shadow tar tmux unzip && \
+    tdnf install -y ansible bash ca-certificates cdrkit curl diffutils gawk git htop jq mc nodejs openssh python3 python3-jinja2 python3-paramiko python3-pip python3-pyyaml python3-resolvelib python3-xml shadow tar tmux unzip wget && \
     # add user/group
     useradd -u ${USER_ID} -g ${GROUP} -m ${USER} && \
     chown -R ${USER}:${GROUP} /home/${USER} && \
