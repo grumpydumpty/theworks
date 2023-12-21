@@ -35,6 +35,7 @@ RUN tdnf update -y && \
     # grab what we can via standard packages
     tdnf install -y ansible bash ca-certificates cdrkit coreutils curl diffutils gawk git htop jq mc nodejs openssh python3 python3-jinja2 python3-paramiko python3-pip python3-pyyaml python3-resolvelib python3-xml shadow tar tmux unzip && \
     # add user/group
+    # groupadd -g ${GROUP_ID} ${GROUP} && \
     useradd -u ${USER_ID} -g ${GROUP} -m ${USER} && \
     chown -R ${USER}:${GROUP} /home/${USER} && \
     # add /workspace and give user permissions
