@@ -5,7 +5,7 @@ ARG OS_ARCH="amd64"
 ARG OS_ARCH2="x86_64"
 ARG TANZU=10.109.195.161
 ARG USER=vlabs
-ARG USER_ID=1280
+ARG USER_ID=1000
 ARG GROUP=users
 ARG GROUP_ID=100
 #ARG LABEL_PREFIX=com.vmware.eocto
@@ -36,7 +36,8 @@ RUN tdnf update -y && \
     tdnf install -y ansible bash ca-certificates cdrkit coreutils curl diffutils gawk git htop jq mc nodejs openssh python3 python3-jinja2 python3-paramiko python3-pip python3-pyyaml python3-resolvelib python3-xml shadow tar tmux unzip && \
     # add user/group
     # groupadd -g ${GROUP_ID} ${GROUP} && \
-    useradd -u ${USER_ID} -g ${GROUP} -m ${USER} && \
+    # useradd -u ${USER_ID} -g ${GROUP} -m ${USER} && \
+    useradd -g ${GROUP} -m ${USER} && \
     chown -R ${USER}:${GROUP} /home/${USER} && \
     # add /workspace and give user permissions
     mkdir -p /workspace && \
