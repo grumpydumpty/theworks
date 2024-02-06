@@ -1,5 +1,7 @@
 # Container Image for The Works
 
+![](logo.png)
+
 ## Overview
 
 Provides a container image for running:
