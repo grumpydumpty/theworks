@@ -70,6 +70,11 @@ RUN tdnf update -y && \
     mv kubens /usr/local/bin && \
     chmod 0755 /usr/local/bin/kubens && \
     rm -rf kubens.tar.gz && \
+    # grab clusterctl
+    CLUSTERCTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/kubernetes-sigs/cluster-api/releases/latest  | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo clusterctl https://github.com/kubernetes-sigs/cluster-api/releases/download/v${CLUSTERCTL_VERSION}/clusterctl-linux-${OS_ARCH} && \
+    mv clusterctl /usr/local/bin/clusterctl && \
+    chmod 0755 /usr/local/bin/clusterctl && \
     # grab packer
     PACKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo packer.zip https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip && \
