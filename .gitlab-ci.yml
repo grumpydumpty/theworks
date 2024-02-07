@@ -45,7 +45,7 @@ pages:
   stage: deploy
   image:
     name: harbor.sydeng.vmware.com/library/mkdocs:dev
-    pull_policy: always
+    # pull_policy: always
   before_script:
     - mkdocs build
   script:
