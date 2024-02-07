@@ -1,6 +1,6 @@
-stages:
-  - build
-  - deploy
+# stages:
+#   - build
+#   - deploy
 
 build:
   stage: build
@@ -41,20 +41,20 @@ build:
       --destination "${HARBOR_HOST}/library/${IMAGE_NAME}:${IMAGE_TAG}"
       # --destination "${HARBOR_HOST}/library/${IMAGE_NAME}:latest"
 
-pages:
-  stage: deploy
-  image:
-    name: harbor.sydeng.vmware.com/library/mkdocs:dev
-    # pull_policy: always
-  before_script:
-    - mkdocs build
-  script:
-    - mv .site/ public/
-  artifacts:
-    paths:
-      # The folder that contains the files to be exposed at the Page URL
-      - public
-  rules:
-    # This ensures that only pushes to the default branch will trigger
-    # a pages deploy
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+# pages:
+#   stage: deploy
+#   image:
+#     name: harbor.sydeng.vmware.com/library/mkdocs:dev
+#     # pull_policy: always
+#   before_script:
+#     - mkdocs build
+#   script:
+#     - mv .site/ public/
+#   artifacts:
+#     paths:
+#       # The folder that contains the files to be exposed at the Page URL
+#       - public
+#   rules:
+#     # This ensures that only pushes to the default branch will trigger
+#     # a pages deploy
+#     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
