@@ -1,3 +1,7 @@
+stages:
+  - build
+  - deploy
+
 build:
   stage: build
   image:
@@ -36,3 +40,19 @@ build:
       --label ${LABEL_PREFIX}.released="${CI_COMMIT_TIMESTAMP}"
       --destination "${HARBOR_HOST}/library/${IMAGE_NAME}:${IMAGE_TAG}"
       # --destination "${HARBOR_HOST}/library/${IMAGE_NAME}:latest"
+
+pages:
+  stage: deploy
+  image: harbor.sydeng.vmware.com/library/mkdocs:dev
+  before_script:
+    - mkdocs build
+  script:
+    - mv .site/ public/
+  artifacts:
+    paths:
+      # The folder that contains the files to be exposed at the Page URL
+      - public
+  rules:
+    # This ensures that only pushes to the default branch will trigger
+    # a pages deploy
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
