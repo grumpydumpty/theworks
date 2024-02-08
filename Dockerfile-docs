@@ -1,0 +1,54 @@
+#############################################################################
+# build markdown to html
+
+# use mkdocs:dev image
+FROM harbor.sydeng.vmware.com/library/mkdocs:dev AS builder
+
+# set work dir
+WORKDIR /workspace
+
+# copy source to build
+COPY --chown=vlabs:users . .
+RUN mkdocs build
+
+# fix permissions
+#RUN find /app/html -type d -exec chmod 0755 {} \; && find /app/html -type f -exec chmod 0644 {} \;
+
+#############################################################################
+# build the final image with content
+
+# get base image
+FROM httpd:2.4-alpine AS final
+WORKDIR /usr/local/apache2/htdocs/
+
+# add metadata via labels
+LABEL com.vmware.eocto.version="0.0.1"
+LABEL com.vmware.eocto.git.repo="git@gitlab.lab.net:sydney/containers/theworks.git"
+LABEL com.vmware.eocto.git.commit="DEADBEEF"
+LABEL com.vmware.eocto.maintainer.name="Richard Croft"
+LABEL com.vmware.eocto.maintainer.email="rcroft@vmware.com"
+LABEL com.vmware.eocto.released="9999-99-99"
+LABEL com.vmware.eocto.based-on="httpd:2.4-alpine"
+LABEL com.vmware.eocto.project="containers/theworks"
+
+# add user and group
+# alpine
+#RUN addgroup -S user && adduser -S -s /bin/false -G user user
+# ubuntu/etc
+#RUN groupadd -r user && useradd -r -s /bin/false -g user user
+
+# reset ownership
+#RUN chown -R user:user /usr/local/apache2/htdocs/
+
+# copy the html to wwwroot
+COPY --from=builder /workspace/.site/ ./
+#COPY --chmod=nobody:nogroup --from=builder /workspace/.site/ ./
+#COPY --chmod=user:user --from=builder /workspace/.site/ ./
+
+#USER user
+
+# fix permissions
+#RUN find . -type d -exec chmod 0755 {} \; && find . -type f -exec chmod 0644 {} \;
+
+#############################################################################
+# vim: ft=unix sync=dockerfile ts=4 sw=4 et tw=78:
