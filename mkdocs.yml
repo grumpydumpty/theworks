@@ -1,7 +1,7 @@
 # Project Information
 site_name: The Works
 site_description: Docker container with all the tools you need.
-site_url: http://theworks.lab.net
+site_url: http://containers.lab.net/theworks
 site_author: Broadcom
 docs_dir: docs
 site_dir: .site

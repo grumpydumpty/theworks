@@ -5,7 +5,7 @@
 FROM harbor.sydeng.vmware.com/library/mkdocs:dev AS builder
 
 # set work dir
-WORKDIR /workspace
+WORKDIR /workspaces
 
 # copy source to build
 COPY --chown=vlabs:users . .
@@ -41,7 +41,7 @@ LABEL com.vmware.eocto.project="containers/theworks"
 #RUN chown -R user:user /usr/local/apache2/htdocs/
 
 # copy the html to wwwroot
-COPY --from=builder /workspace/.site/ ./
+COPY --from=builder /workspaces/.site/ ./theworks
 #COPY --chmod=nobody:nogroup --from=builder /workspace/.site/ ./
 #COPY --chmod=user:user --from=builder /workspace/.site/ ./
 
