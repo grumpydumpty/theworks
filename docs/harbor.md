@@ -1,4 +1,10 @@
-# Harbor Variables
+---
+title: Harbor Variables
+draft: false
+date: 2022-01-31
+authors:
+  - grumpydumpty
+---
 
 These can be set at any level but we generally set them at the group or project level.
 

@@ -1,4 +1,10 @@
-# Getting Started
+---
+title: Getting Started Guide
+draft: false
+date: 2022-01-31
+authors:
+  - grumpydumpty
+---
 
 Run the following to download the latest container from Docker Hub:
 

@@ -1,4 +1,10 @@
-# Support
+---
+title: Support
+draft: false
+date: 2022-01-31
+authors:
+  - grumpydumpty
+---
 
 :octicons-heart-24: &nbsp; While this module is not supported by VMware Support Services, it is supported by the project maintainers and its community of users.
 
