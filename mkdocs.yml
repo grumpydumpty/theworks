@@ -1,20 +1,19 @@
 # Project Information
 site_name: The Works
 site_description: Docker container with all the tools you need.
-site_url: http://containers.lab.net/theworks
-site_author: Broadcom
+site_url: https://grumpydumpty.github.io/theworks
+site_author: Grumpy Dumpty
 docs_dir: docs
 site_dir: .site
 use_directory_urls: true
 
 # Repository
-repo_url: https://gitlab.eng.vmware.com/sydney/containers/theworks
-edit_uri: -/blob/main/docs
+repo_url: https://github.com/grumpydumpty/theworks
+edit_uri: blob/main/docs
 
 # Copyright
 copyright: |
-  Copyright &copy; 2005-2024 Broadcom. All rights reserved.<br/>
-  The term “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.<br/><br/>
+  Copyright &copy; 1970-2024 Grumpy Dumpty. All rights reserved.<br/><br/>
 
 # Configuration
 theme:
@@ -80,19 +79,16 @@ plugins:
 
 # Customization
 extra:
-  config:
-    repo_url: https://gitlab.eng.vmware.com/sydney/containers/theworks
-    repo_url_raw: https://gitlab.eng.vmware.com/sydney/containers/theworks/-/raw/main
   version:
     default: latest
     provider: mike
   social:
-    - icon: fontawesome/brands/gitlab
-      link: https://gitlab.eng.vmware.com/sydney/containers/theworks
+    - icon: fontawesome/brands/github
+      link: https://github.com/grumpydumpty/theworks
     - icon: fontawesome/solid/book
-      link: http://containers.lab.net/theworks/
+      link: https://grumpydumpty.github.io/theworks/
     - icon: fontawesome/solid/code
-      link: https://gitlab.eng.vmware.com/sydney/containers/theworks/docs
+      link: https://github.com/grumpydumpty/theworks/docs
 extra_css:
   - assets/stylesheets/extra.css
   - assets/stylesheets/spanable.css
@@ -137,13 +133,13 @@ nav:
   - GitLab CI/CD: gitlab-ci.md
   - Harbor Repo: harbor.md
   - Release Notes: release-notes.md
-  - Release Milestones: https://gitlab.eng.vmware.com/sydney/containers/theworks/-/milestones
+  - Release Milestones: https://github.com/grumpydumpty/theworks/milestones
   - License: license.md
 - Community:
   - community/index.md
   - Contributing: community/contributing.md
-  - Discussions: https://gitlab.eng.vmware.com/sydney/containers/theworks/activity
-  - Search Issues: https://gitlab.eng.vmware.com/sydney/containers/theworks/-/issues
-  - Open an Issue: https://gitlab.eng.vmware.com/sydney/containers/theworks/-/issues/new
+  - Discussions: https://github.com/grumpydumpty/theworks/discussions
+  - Search Issues: https://github.com/grumpydumpty/theworks/issues
+  - Open an Issue: https://github.com/grumpydumpty/theworks/issues/new
   - Support: community/support.md
   - Code of Conduct: community/code-of-conduct.md
