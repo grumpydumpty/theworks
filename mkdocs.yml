@@ -9,7 +9,7 @@ use_directory_urls: true
 
 # Repository
 repo_url: https://github.com/grumpydumpty/theworks
-edit_uri: blob/main/docs
+edit_uri: edit/main/docs/
 
 # Copyright
 copyright: |
@@ -88,7 +88,7 @@ extra:
     - icon: fontawesome/solid/book
       link: https://grumpydumpty.github.io/theworks/
     - icon: fontawesome/solid/code
-      link: https://github.com/grumpydumpty/theworks/docs
+      link: https://github.com/grumpydumpty/theworks/tree/main/docs
 extra_css:
   - assets/stylesheets/extra.css
   - assets/stylesheets/spanable.css
