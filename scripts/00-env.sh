@@ -6,6 +6,8 @@
 # sync with the definitions in this file.
 #
 
+BASE=${PWD}
+
 # image and container name
 IMAGE=theworks
 CONTAINER=$IMAGE
