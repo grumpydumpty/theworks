@@ -101,3 +101,7 @@ These can be set at any level but we generally set them at the group or project 
 | GITLAB_USER_EMAIL         |       |
 | GITLAB_USER_LOGIN         |       |
 | GITLAB_USER_NAME          |       |
+
+## Package Versions
+
+<!-- snip -->
