@@ -63,7 +63,7 @@ RUN tdnf update -y && \
     chmod 0755 /usr/local/bin/kubectl-vsphere && \
     rm -f vsphere-plugin.zip && \
     # grab helm
-    HELM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/helm/helm/releases/latest | jq -r '.tag_name') && \
+    export HELM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/helm/helm/releases/latest | jq -r '.tag_name') && \
     curl -skSLo helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-${OS_ARCH}.tar.gz && \
     tar xzf helm.tar.gz linux-${OS_ARCH}/helm && \
     mv linux-${OS_ARCH}/helm /usr/local/bin/ && \
@@ -71,7 +71,7 @@ RUN tdnf update -y && \
     chmod 0755 /usr/local/bin/helm && \
     rm -rf helm.tar.gz linux-${OS_ARCH} && \
     # grab kubectx
-    KUBECTX_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/ahmetb/kubectx/releases/latest | jq -r '.tag_name') && \
+    export KUBECTX_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/ahmetb/kubectx/releases/latest | jq -r '.tag_name') && \
     curl -skSLo kubectx.tar.gz https://github.com/ahmetb/kubectx/releases/download/${KUBECTX_VERSION}/kubectx_${KUBECTX_VERSION}_linux_${OS_ARCH2}.tar.gz && \
     tar xzf kubectx.tar.gz kubectx && \
     mv kubectx /usr/local/bin && \
@@ -79,7 +79,7 @@ RUN tdnf update -y && \
     chmod 0755 /usr/local/bin/kubectx && \
     rm -rf kubectx.tar.gz && \
     # grab kubens
-    KUBENS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/ahmetb/kubectx/releases/latest | jq -r '.tag_name') && \
+    export KUBENS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/ahmetb/kubectx/releases/latest | jq -r '.tag_name') && \
     curl -skSLo kubens.tar.gz https://github.com/ahmetb/kubectx/releases/download/${KUBENS_VERSION}/kubens_${KUBENS_VERSION}_linux_${OS_ARCH2}.tar.gz && \
     tar xzf kubens.tar.gz kubens && \
     mv kubens /usr/local/bin && \
@@ -87,59 +87,67 @@ RUN tdnf update -y && \
     chmod 0755 /usr/local/bin/kubens && \
     rm -rf kubens.tar.gz && \
     # grab clusterctl
-    CLUSTERCTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/kubernetes-sigs/cluster-api/releases/latest  | jq -r '.tag_name' | tr -d 'v') && \
+    export CLUSTERCTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/kubernetes-sigs/cluster-api/releases/latest  | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo clusterctl https://github.com/kubernetes-sigs/cluster-api/releases/download/v${CLUSTERCTL_VERSION}/clusterctl-linux-${OS_ARCH} && \
     mv clusterctl /usr/local/bin/clusterctl && \
     chown root:root /usr/local/bin/clusterctl && \
     chmod 0755 /usr/local/bin/clusterctl && \
     # grab packer
-    PACKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    export PACKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo packer.zip https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip && \
     unzip -o -d /usr/local/bin/ packer.zip && \
     chown root:root /usr/local/bin/packer && \
     chmod 0755 /usr/local/bin/packer && \
     rm -f packer.zip && \
     # grab packer vsphere plugin
-    VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer-plugin-vsphere/releases/latest | jq -r '.tag_name') && \
+    export VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer-plugin-vsphere/releases/latest | jq -r '.tag_name') && \
     packer plugins install github.com/hashicorp/vsphere ${VSPHERE_PLUGIN_VERSION} && \
     # grab terraform
-    TERRAFORM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/terraform/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    export TERRAFORM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/terraform/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${OS_ARCH}.zip && \
     unzip -o -d /usr/local/bin/ terraform.zip && \
     chown root:root /usr/local/bin/terraform && \
     chmod 0755 /usr/local/bin/terraform && \
     rm -f terraform.zip && \
     # grab nomad
-    NOMAD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/nomad/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    export NOMAD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/nomad/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_${OS_ARCH}.zip && \
     unzip -o -d /usr/local/bin/ nomad.zip && \
     chown root:root /usr/local/bin/nomad && \
     chmod 0755 /usr/local/bin/nomad && \
     rm -f nomad.zip && \
     # grab consul
-    CONSUL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/consul/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    export CONSUL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/consul/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_${OS_ARCH}.zip && \
     unzip -o -d /usr/local/bin/ consul.zip && \
     chown root:root /usr/local/bin/consul && \
     chmod 0755 /usr/local/bin/consul && \
     rm -f consul.zip && \
     # grab vault
-    VAULT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/vault/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    export VAULT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/vault/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo vault.zip https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_${OS_ARCH}.zip && \
     unzip -o -d /usr/local/bin/ vault.zip && \
     chown root:root /usr/local/bin/vault && \
     chmod 0755 /usr/local/bin/vault && \
     rm -f vault.zip && \
     # grab terraform-docs
-    TERRAFORMDOCS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/terraform-docs/terraform-docs/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    export TERRAFORMDOCS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/terraform-docs/terraform-docs/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/v${TERRAFORMDOCS_VERSION}/terraform-docs-v${TERRAFORMDOCS_VERSION}-linux-${OS_ARCH}.tar.gz && \
     tar xzf terraform-docs.tar.gz terraform-docs && \
     mv terraform-docs /usr/local/bin && \
     chown root:root /usr/local/bin/terraform-docs && \
     chmod 0755 /usr/local/bin/terraform-docs && \
     rm -f terraform-docs.tar.gz && \
+    # grab terrascan
+    export TERRASCAN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tenable/terrascan/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo terrascan.tar.gz https://github.com/tenable/terrascan/releases/download/v${TERRASCAN_VERSION}/terrascan_${TERRASCAN_VERSION}_linux_${OS_ARCH}.tar.gz && \
+    tar xzf terrascan.tar.gz terrascan && \
+    mv terrascan /usr/local/bin && \
+    chown root:root /usr/local/bin/terrascan && \
+    chmod 0755 /usr/local/bin/terrascan && \
+    rm -f terrascan.tar.gz && \
     # grab k9s
-    K9S_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/derailed/k9s/releases/latest | jq -r '.tag_name') && \
+    export K9S_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/derailed/k9s/releases/latest | jq -r '.tag_name') && \
     curl -skSLo k9s.tar.gz https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_Linux_${OS_ARCH}.tar.gz && \
     tar xzf k9s.tar.gz k9s && \
     mv k9s /usr/local/bin && \
@@ -147,7 +155,7 @@ RUN tdnf update -y && \
     chmod 0755 /usr/local/bin/k9s && \
     rm -f k9s.tar.gz && \
     # grab lazygit
-    LAZYGIT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jesseduffield/lazygit/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    export LAZYGIT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jesseduffield/lazygit/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo lazygit.tar.gz https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_linux_${OS_ARCH2}.tar.gz && \
     tar xzf lazygit.tar.gz lazygit && \
     mv lazygit /usr/local/bin && \
@@ -155,7 +163,7 @@ RUN tdnf update -y && \
     chmod 0755 /usr/local/bin/lazygit && \
     rm -f lazygit.tar.gz && \
     # grab lazydocker
-    LAZYDOCKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jesseduffield/lazydocker/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    export LAZYDOCKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jesseduffield/lazydocker/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo lazydocker.tar.gz https://github.com/jesseduffield/lazydocker/releases/download/v${LAZYDOCKER_VERSION}/lazydocker_${LAZYDOCKER_VERSION}_linux_${OS_ARCH2}.tar.gz && \
     tar xzf lazydocker.tar.gz lazydocker && \
     mv lazydocker /usr/local/bin && \
