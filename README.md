@@ -105,3 +105,17 @@ These can be set at any level but we generally set them at the group or project 
 ## Package Versions
 
 <!-- snip -->
+| Package | Version |
+|---------|---------|
+| HELM | v3.14.4 |
+| KUBECTX | v0.9.5 |
+| KUBENS | v0.9.5 |
+| CLUSTERCTL | 1.7.0 |
+| PACKER | 1.10.2 |
+| TERRAFORM | 1.8.0 |
+| NOMAD | 1.7.7 |
+| CONSUL | 1.18.1 |
+| VAULT | 1.16.1 |
+| TERRAFORMDOCS | 0.17.0 |
+| LAZYGIT | 0.41.0 |
+| LAZYDOCKER | 0.23.1 |
