@@ -188,6 +188,15 @@ RUN TERRASCAN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.c
     chmod 0755 /usr/local/bin/terrascan && \
     rm -f terrascan.tar.gz
 
+# grab tfnotify
+RUN TFNOTIFY_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/mercari/tfnotify/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo tfnotify.tar.gz https://github.com/mercari/tfnotify/releases/download/v${TFNOTIFY_VERSION}/terrascan_${TFNOTIFY_VERSION}_linux_${OS_ARCH}.tar.gz && \
+    tar xzf tfnotify.tar.gz tfnotify && \
+    mv tfnotify /usr/local/bin && \
+    chown root:root /usr/local/bin/tfnotify && \
+    chmod 0755 /usr/local/bin/tfnotify && \
+    rm -f tfnotify.tar.gz
+
 # grab k9s
 RUN K9S_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/derailed/k9s/releases/latest | jq -r '.tag_name') && \
     curl -skSLo k9s.tar.gz https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_Linux_${OS_ARCH}.tar.gz && \
