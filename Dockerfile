@@ -181,7 +181,7 @@ RUN TERRAFORMDOCS_VERSION=$(curl -H 'Accept: application/json' -sSL https://gith
 
 # grab terrascan
 RUN TERRASCAN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tenable/terrascan/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo terrascan.tar.gz https://github.com/tenable/terrascan/releases/download/v${TERRASCAN_VERSION}/terrascan_${TERRASCAN_VERSION}_linux_${OS_ARCH}.tar.gz && \
+    curl -skSLo terrascan.tar.gz https://github.com/tenable/terrascan/releases/download/v${TERRASCAN_VERSION}/terrascan_${TERRASCAN_VERSION}_linux_${OS_ARCH2}.tar.gz && \
     tar xzf terrascan.tar.gz terrascan && \
     mv terrascan /usr/local/bin && \
     chown root:root /usr/local/bin/terrascan && \
@@ -190,12 +190,30 @@ RUN TERRASCAN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.c
 
 # grab tfnotify
 RUN TFNOTIFY_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/mercari/tfnotify/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo tfnotify.tar.gz https://github.com/mercari/tfnotify/releases/download/v${TFNOTIFY_VERSION}/terrascan_${TFNOTIFY_VERSION}_linux_${OS_ARCH}.tar.gz && \
+    curl -skSLo tfnotify.tar.gz https://github.com/mercari/tfnotify/releases/download/v${TFNOTIFY_VERSION}/tfnotify_linux_${OS_ARCH}.tar.gz && \
     tar xzf tfnotify.tar.gz tfnotify && \
     mv tfnotify /usr/local/bin && \
     chown root:root /usr/local/bin/tfnotify && \
     chmod 0755 /usr/local/bin/tfnotify && \
     rm -f tfnotify.tar.gz
+
+# grab tfsec (depreciated)
+RUN TFSEC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/aquasecurity/tfsec/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo tfsec.tar.gz https://github.com/aquasecurity/tfsec/releases/download/v${TFSEC_VERSION}/tfsec_${TFSEC_VERSION}_linux_${OS_ARCH}.tar.gz && \
+    tar xzf tfsec.tar.gz tfsec && \
+    mv tfsec /usr/local/bin && \
+    chown root:root /usr/local/bin/tfsec && \
+    chmod 0755 /usr/local/bin/tfsec && \
+    rm -f tfsec.tar.gz
+
+# grab trivy (replacing tfsec)
+RUN TRIVY_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/aquasecurity/trivy/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz && \
+    tar xzf trivy.tar.gz trivy && \
+    mv trivy /usr/local/bin && \
+    chown root:root /usr/local/bin/trivy && \
+    chmod 0755 /usr/local/bin/trivy && \
+    rm -f trivy.tar.gz
 
 # grab k9s
 RUN K9S_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/derailed/k9s/releases/latest | jq -r '.tag_name') && \
