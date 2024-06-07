@@ -81,9 +81,9 @@ RUN curl -skSLo gitflow-installer.sh https://raw.githubusercontent.com/petervand
     rm -rf ./gitflow-installer.sh /gitflow/
 
 # install mkdocs, mkdocs-material, and desired plugins
+COPY ./requirements.txt .
 RUN pip3 install --no-cache-dir --upgrade pip && \
-    pip3 install --no-cache-dir mkdocs mkdocs-material mkdocs-rss-plugin mkdocs-git-revision-date-localized-plugin mkdocs-markdownextradata-plugin mkdocs-minify-plugin mkdocs-open-in-new-tab neoteroi-mkdocs
-    #pip3 install --no-cache-dir -r docs/requirements.txt
+    pip3 install --no-cache-dir -r ./requirements.txt
 
 # grab kubectl vsphere plugins
 RUN curl -skSLo vsphere-plugin.zip https://${TANZU}/wcp/plugin/linux-${OS_ARCH}/vsphere-plugin.zip && \
@@ -243,10 +243,7 @@ RUN LAZYDOCKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.
     rm -f lazydocker.tar.gz
 
 # harden and remove unecessary packages
-# RUN dnf remove -y toybox shadow openssh openssh-clients openssh-server ncurses ncurses-terminfo && \
-RUN dnf remove -y toybox shadow openssh-server && \
-    # remove unnecessary packages
-    dnf remove -y virt-what vim-minimal usermode acl && \
+RUN dnf remove -y shadow virt-what vim-minimal usermode acl && \
     # lock down
     chown -R root:root /usr/local/bin/ && \
     chown root:root /var/log && \
