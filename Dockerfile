@@ -46,13 +46,13 @@ RUN tdnf update -y && \
     git config --system --add init.defaultBranch "main" && \
     git config --system --add safe.directory "/workspace"
 
-    # install gitflow
+# install gitflow
 RUN curl -skSLo gitflow-installer.sh https://raw.githubusercontent.com/petervanderdoes/gitflow-avh/develop/contrib/gitflow-installer.sh && \
     chmod +x ./gitflow-installer.sh && \
     ./gitflow-installer.sh install stable && \
     chown root:root /usr/local/bin/git-flow && \
     chmod 0755 /usr/local/bin/git-flow && \
-    rm -rf ./gitflow-installer.sh /gitflow/ && \
+    rm -rf ./gitflow-installer.sh /gitflow/
 
 # install mkdocs, mkdocs-material, and desired plugins
 COPY ./requirements.txt .
@@ -67,14 +67,14 @@ RUN curl -skSLo vsphere-plugin.zip https://${TANZU}/wcp/plugin/linux-${OS_ARCH}/
     rm -f vsphere-plugin.zip
 
 # grab gh
-RUN GHCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/cli/cli/releases/latest | jq -r '.tag_name') && \
+RUN GHCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/cli/cli/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo gh-cli.tar.gz https://github.com/cli/cli/releases/download/v${GHCLI_VERSION}/gh_${GHCLI_VERSION}_linux_${OS_ARCH}.tar.gz && \
-    tar xzf gh-cli.tar.gz gh_${GHCLI_VERSION}_${OS_ARCH}/bin/gh && \
-    mv gh_${GHCLI_VERSION}_${OS_ARCH}/bin/gh /usr/local/bin/ && \
+    tar xzf gh-cli.tar.gz gh_${GHCLI_VERSION}_linux_${OS_ARCH}/bin/gh && \
+    mv gh_${GHCLI_VERSION}_linux_${OS_ARCH}/bin/gh /usr/local/bin/ && \
     chown root:root /usr/local/bin/gh && \
     chmod 0755 /usr/local/bin/gh && \
-    rm -rf gh-cli.tar.gz gh_${GHCLI_VERSION}_${OS_ARCH}
-    
+    rm -rf gh-cli.tar.gz gh_${GHCLI_VERSION}_linux_${OS_ARCH}
+
 # grab helm
 RUN HELM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/helm/helm/releases/latest | jq -r '.tag_name') && \
     curl -skSLo helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-${OS_ARCH}.tar.gz && \
@@ -117,7 +117,7 @@ RUN PACKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
     chmod 0755 /usr/local/bin/packer && \
     rm -f packer.zip
 
-    # grab packer vsphere plugin
+# grab packer vsphere plugin
 RUN VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer-plugin-vsphere/releases/latest | jq -r '.tag_name') && \
     packer plugins install github.com/hashicorp/vsphere ${VSPHERE_PLUGIN_VERSION}
 
@@ -136,7 +136,7 @@ RUN NOMAD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/h
     chown root:root /usr/local/bin/nomad && \
     chmod 0755 /usr/local/bin/nomad && \
     rm -f nomad.zip
-    
+
 # grab consul
 RUN CONSUL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/consul/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_${OS_ARCH}.zip && \
@@ -164,12 +164,39 @@ RUN TERRAFORMDOCS_VERSION=$(curl -H 'Accept: application/json' -sSL https://gith
 
 # grab terrascan
 RUN TERRASCAN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tenable/terrascan/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo terrascan.tar.gz https://github.com/tenable/terrascan/releases/download/v${TERRASCAN_VERSION}/terrascan_${TERRASCAN_VERSION}_linux_${OS_ARCH}.tar.gz && \
+    curl -skSLo terrascan.tar.gz https://github.com/tenable/terrascan/releases/download/v${TERRASCAN_VERSION}/terrascan_${TERRASCAN_VERSION}_linux_${OS_ARCH2}.tar.gz && \
     tar xzf terrascan.tar.gz terrascan && \
     mv terrascan /usr/local/bin && \
     chown root:root /usr/local/bin/terrascan && \
     chmod 0755 /usr/local/bin/terrascan && \
     rm -f terrascan.tar.gz
+
+# grab tfnotify
+RUN TFNOTIFY_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/mercari/tfnotify/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo tfnotify.tar.gz https://github.com/mercari/tfnotify/releases/download/v${TFNOTIFY_VERSION}/tfnotify_linux_${OS_ARCH}.tar.gz && \
+    tar xzf tfnotify.tar.gz tfnotify && \
+    mv tfnotify /usr/local/bin && \
+    chown root:root /usr/local/bin/tfnotify && \
+    chmod 0755 /usr/local/bin/tfnotify && \
+    rm -f tfnotify.tar.gz
+
+# grab tfsec (depreciated)
+RUN TFSEC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/aquasecurity/tfsec/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo tfsec.tar.gz https://github.com/aquasecurity/tfsec/releases/download/v${TFSEC_VERSION}/tfsec_${TFSEC_VERSION}_linux_${OS_ARCH}.tar.gz && \
+    tar xzf tfsec.tar.gz tfsec && \
+    mv tfsec /usr/local/bin && \
+    chown root:root /usr/local/bin/tfsec && \
+    chmod 0755 /usr/local/bin/tfsec && \
+    rm -f tfsec.tar.gz
+
+# grab trivy (replacing tfsec)
+RUN TRIVY_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/aquasecurity/trivy/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz && \
+    tar xzf trivy.tar.gz trivy && \
+    mv trivy /usr/local/bin && \
+    chown root:root /usr/local/bin/trivy && \
+    chmod 0755 /usr/local/bin/trivy && \
+    rm -f trivy.tar.gz
 
 # grab k9s
 RUN K9S_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/derailed/k9s/releases/latest | jq -r '.tag_name') && \
@@ -197,6 +224,13 @@ RUN LAZYDOCKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.
     chown root:root /usr/local/bin/lazydocker && \
     chmod 0755 /usr/local/bin/lazydocker && \
     rm -f lazydocker.tar.gz
+
+# harden and remove unecessary packages
+RUN chown -R root:root /usr/local/bin/ && \
+    chown root:root /var/log && \
+    chmod 0640 /var/log && \
+    chown root:root /usr/lib/ && \
+    chmod 755 /usr/lib/
 
 # clean up
 RUN tdnf erase -y unzip shadow && \

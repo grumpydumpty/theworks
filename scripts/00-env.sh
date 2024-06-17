@@ -19,15 +19,15 @@ TAG=dev
 VERSION=0.0.1
 
 # project info
-PROJECT="sydney/containers/theworks"
+PROJECT="grumpydumpty/theworks"
 
 # maintainer info
 MAIN_USER="Richard Croft"
 MAIN_EMAIL="rcroft@vmware.com"
-MAIN_URL="https://gitlab.eng.vmware.com/rcroft"
+MAIN_URL="https://github.com/grumpydumpty"
 
 # below needs to match "ARG LABEL_PREFIX=" in Dockerfile
-LABEL_PREFIX=com.vmware.eocto
+LABEL_PREFIX=net.lab
 
 # domain name for container hostname
 DOMAIN="lab.net"
@@ -37,4 +37,4 @@ WORKDIR="/workspace"
 
 # repository to push image to
 #REPO=harbor.sydeng.vmware.com/rcroft
-REPO=harbor.sydeng.vmware.com/library
+REPO=ghcr.io/grumpydumpty/theworks
