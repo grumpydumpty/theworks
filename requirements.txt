@@ -16,4 +16,4 @@ neoteroi-mkdocs
 #ranger-fm
 # asciinema etc
 asciinema
-asciinema-scene
+# asciinema-scene # needs python >=3.10, almalinux support <=3.9

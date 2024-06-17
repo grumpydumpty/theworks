@@ -1,4 +1,4 @@
-FROM photon:5.0
+FROM almalinux:9.3-minimal
 
 # set argument defaults
 ARG OS_ARCH="amd64"
@@ -7,7 +7,7 @@ ARG HUGO_VARIANT="hugo_extended"
 ARG TANZU=10.109.195.161
 ARG USER=vlabs
 ARG USER_ID=1000
-ARG GROUP=users
+ARG GROUP=vlabs
 ARG GROUP_ID=100
 #ARG LABEL_PREFIX=net.lab
 
@@ -19,32 +19,33 @@ ARG GROUP_ID=100
 # LABEL ${LABEL_PREFIX}.maintainer.email="rcroft@vmware.com"
 # LABEL ${LABEL_PREFIX}.maintainer.url="https://github.com/grumpdumpty"
 # LABEL ${LABEL_PREFIX}.released="9999-99-99"
-# LABEL ${LABEL_PREFIX}.based-on="photon:5.0"
+# LABEL ${LABEL_PREFIX}.based-on="almalinux:9.3-minimal"
 # LABEL ${LABEL_PREFIX}.project="theworks"
 
-# update repositories
-RUN tdnf update -y && \
-    tdnf install -y glibc-i18n && \
-    tdnf clean all && \
-    locale-gen.sh
+# set locale
+# ENV LOCALE=en_US.utf-8
+# ENV LC_ALL=en_US.utf-8
 
-ENV LOCALE=en_US.utf-8
-ENV LC_ALL=en_US.utf-8
-
-# update repositories, install packages, and then clean up
-RUN tdnf update -y && \
-    # grab what we can via standard packages
-    tdnf install -y \
-        ansible \
+# update repositories, install packages, add user/group, add workspace dir, and set git to accept workspace dir
+RUN set -o pipefail && \
+    sed -i "s/clean_requirements_on_remove=0/clean_requirements_on_remove=1/" /etc/dnf/dnf.conf && \
+    sed -i -E '/gpgcheck/s/^#//g; s/gpgcheck=0/gpgcheck=1/g' /etc/dnf/dnf.conf && \
+    sed -i 's/gpgcheck=0/gpgcheck=1/g' /etc/yum.repos.d/* && \
+    microdnf install -y dnf && \
+    dnf distro-sync -y && \
+    dnf check-update && \
+    dnf -y update && \
+    dnf -y upgrade && \
+    # install extra packages
+    dnf install -y  \
+        ansible-core \
         bash \
         ca-certificates \
-        cdrkit \
-        coreutils \
-        curl \
+        curl-minimal \
         diffutils \
+        findutils \
         gawk \
         git \
-        htop \
         jq \
         less \
         mc \
@@ -53,19 +54,20 @@ RUN tdnf update -y && \
         openssh \
         python3 \
         python3-jinja2 \
-        python3-paramiko \
         python3-pip \
         python3-pyyaml \
         python3-resolvelib \
-        python3-xml \
         shadow \
         tar \
         tmux \
+        tree \
         unzip \
-        vim && \
+        vim \
+        xorriso && \
     # add user/group
     # groupadd -g ${GROUP_ID} ${GROUP} && \
     # useradd -u ${USER_ID} -g ${GROUP} -m ${USER} && \
+    groupadd ${GROUP} && \
     useradd -g ${GROUP} -m ${USER} && \
     chown -R ${USER}:${GROUP} /home/${USER} && \
     # add /workspace and give user permissions
@@ -290,15 +292,16 @@ RUN TERMSVG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com
     rm -rf termsvg.tar.gz termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}
 
 # harden and remove unecessary packages
-RUN chown -R root:root /usr/local/bin/ && \
+# RUN dnf remove -y toybox shadow openssh openssh-clients openssh-server ncurses ncurses-terminfo && \
+RUN dnf remove -y shadow-utils virt-what vim-minimal usermode acl && \
+    # lock down
+    chown -R root:root /usr/local/bin/ && \
     chown root:root /var/log && \
     chmod 0640 /var/log && \
     chown root:root /usr/lib/ && \
-    chmod 755 /usr/lib/
-
-# clean up
-RUN tdnf erase -y unzip shadow && \
-    tdnf clean all
+    chmod 755 /usr/lib/ && \
+    # clean up
+    dnf clean all
 
 # set user
 USER ${USER}
