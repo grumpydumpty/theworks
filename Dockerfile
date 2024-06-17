@@ -252,7 +252,7 @@ RUN LAZYDOCKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.
     rm -f lazydocker.tar.gz
 
 # harden and remove unecessary packages
-RUN dnf remove -y shadow virt-what vim-minimal usermode acl && \
+RUN dnf remove -y shadow-utils && \
     # lock down
     chown -R root:root /usr/local/bin/ && \
     chown root:root /var/log && \
@@ -260,10 +260,9 @@ RUN dnf remove -y shadow virt-what vim-minimal usermode acl && \
     chown root:root /usr/lib/ && \
     chmod 755 /usr/lib/ && \
     # clean up
-    dnf check-update && \
     dnf -y update && \
     dnf -y upgrade && \
-    dnf clean all
+    dnf -y clean all
 
 # set user
 USER ${USER}
