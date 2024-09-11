@@ -86,12 +86,12 @@ COPY ./requirements.txt .
 RUN pip3 install --no-cache-dir --upgrade pip && \
     pip3 install --no-cache-dir -r ./requirements.txt
 
-# grab kubectl vsphere plugins
-RUN curl -skSLo vsphere-plugin.zip https://${TANZU}/wcp/plugin/linux-${OS_ARCH}/vsphere-plugin.zip && \
-    unzip -d /usr/local vsphere-plugin.zip && \
-    chown root:root /usr/local/bin/kubectl-vsphere && \
-    chmod 0755 /usr/local/bin/kubectl-vsphere && \
-    rm -f vsphere-plugin.zip
+# # grab kubectl vsphere plugins
+# RUN curl -skSLo vsphere-plugin.zip https://${TANZU}/wcp/plugin/linux-${OS_ARCH}/vsphere-plugin.zip && \
+#     unzip -d /usr/local vsphere-plugin.zip && \
+#     chown root:root /usr/local/bin/kubectl-vsphere && \
+#     chmod 0755 /usr/local/bin/kubectl-vsphere && \
+#     rm -f vsphere-plugin.zip
 
 # grab gh
 RUN GHCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/cli/cli/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
