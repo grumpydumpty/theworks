@@ -73,14 +73,6 @@ RUN tdnf update -y && \
     git config --system --add init.defaultBranch "main" && \
     git config --system --add safe.directory "/workspace"
 
-# install gitflow
-RUN curl -skSLo gitflow-installer.sh https://raw.githubusercontent.com/petervanderdoes/gitflow-avh/develop/contrib/gitflow-installer.sh && \
-    chmod +x ./gitflow-installer.sh && \
-    ./gitflow-installer.sh install stable && \
-    chown root:root /usr/local/bin/git-flow && \
-    chmod 0755 /usr/local/bin/git-flow && \
-    rm -rf ./gitflow-installer.sh /gitflow/
-
 # install mkdocs, mkdocs-material, and desired plugins
 COPY ./requirements.txt .
 RUN pip3 install --no-cache-dir --upgrade pip && \
@@ -92,6 +84,23 @@ RUN pip3 install --no-cache-dir --upgrade pip && \
 #     chown root:root /usr/local/bin/kubectl-vsphere && \
 #     chmod 0755 /usr/local/bin/kubectl-vsphere && \
 #     rm -f vsphere-plugin.zip
+
+# install gitflow
+RUN curl -skSLo gitflow-installer.sh https://raw.githubusercontent.com/petervanderdoes/gitflow-avh/develop/contrib/gitflow-installer.sh && \
+    chmod +x ./gitflow-installer.sh && \
+    ./gitflow-installer.sh install stable && \
+    chown root:root /usr/local/bin/git-flow && \
+    chmod 0755 /usr/local/bin/git-flow && \
+    rm -rf ./gitflow-installer.sh /gitflow/
+
+# grab git-lfs
+RUN GIT_LFS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/git-lfs/git-lfs/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo git-lfs.tar.gz https://github.com/git-lfs/git-lfs/releases/download/v${GIT_LFS_VERSION}/git-lfs-linux-${OS_ARCH}-v${GIT_LFS_VERSION}.tar.gz && \
+    tar xzf git-lfs.tar.gz git-lfs-${GIT_LFS_VERSION}/git-lfs && \
+    mv git-lfs-${GIT_LFS_VERSION}/git-lfs /usr/local/bin/ && \
+    chown root:root /usr/local/bin/git-lfs && \
+    chmod 0755 /usr/local/bin/git-lfs && \
+    rm -rf git-lfs.tar.gz git-lfs-${GIT_LFS_VERSION}
 
 # grab gh
 RUN GHCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/cli/cli/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
