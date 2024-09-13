@@ -45,6 +45,7 @@ RUN tdnf update -y && \
         git \
         htop \
         jq \
+        less \
         mc \
         ncurses \
         nodejs \
