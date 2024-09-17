@@ -79,6 +79,11 @@ COPY ./requirements.txt .
 RUN pip3 install --no-cache-dir --upgrade pip && \
     pip3 install --no-cache-dir -r ./requirements.txt
 
+# install ansible
+RUN pip3 install ansible-core && \
+    pip3 install pywinrm[credssp] && \
+    ansible-galaxy collection install ansible.windows
+
 # # grab kubectl vsphere plugins
 # RUN curl -skSLo vsphere-plugin.zip https://${TANZU}/wcp/plugin/linux-${OS_ARCH}/vsphere-plugin.zip && \
 #     unzip -d /usr/local vsphere-plugin.zip && \
@@ -261,6 +266,20 @@ RUN LAZYDOCKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.
     chown root:root /usr/local/bin/lazydocker && \
     chmod 0755 /usr/local/bin/lazydocker && \
     rm -f lazydocker.tar.gz
+
+# install tini
+RUN TINI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/krallin/tini/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -L https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-${ARCH} > /usr/local/bin/tini && \
+    chmod 0755 /usr/local/bin/tini
+
+# install hugo
+RUN VARIANT=${VARIANT} && \
+    HUGO_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/gohugoio/hugo/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo hugo.tar.gz https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${VARIANT}_${HUGO_VERSION}_linux-${ARCH}.tar.gz && \
+    tar xzf hugo.tar.gz hugo && \    
+    mv hugo /usr/local/bin && \
+    chmod 0755 /usr/local/bin/hugo && \
+    rm -rf hugo.tar.gz
 
 # harden and remove unecessary packages
 RUN chown -R root:root /usr/local/bin/ && \

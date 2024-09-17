@@ -37,4 +37,4 @@ WORKDIR="/workspace"
 
 # repository to push image to
 #REPO=harbor.sydeng.vmware.com/rcroft
-REPO=ghcr.io/grumpydumpty/theworks
+REPO=ghcr.io/grumpydumpty/${IMAGE}
