@@ -8,18 +8,18 @@ ARG USER=vlabs
 ARG USER_ID=1000
 ARG GROUP=users
 ARG GROUP_ID=100
-#ARG LABEL_PREFIX=com.vmware.eocto
+#ARG LABEL_PREFIX=net.lab
 
-# add metadata via labels
+# # add metadata via labels
 # LABEL ${LABEL_PREFIX}.version="0.0.1"
-# LABEL ${LABEL_PREFIX}.git.repo="git@gitlab.eng.vmware.com:sydney/containers/theworks.git"
+# LABEL ${LABEL_PREFIX}.git.repo="git@github.com:grumpdumpty/theworks.git"
 # LABEL ${LABEL_PREFIX}.git.commit="DEADBEEF"
 # LABEL ${LABEL_PREFIX}.maintainer.name="Richard Croft"
 # LABEL ${LABEL_PREFIX}.maintainer.email="rcroft@vmware.com"
-# LABEL ${LABEL_PREFIX}.maintainer.url="https://gitlab.eng.vmware.com/rcroft/"
+# LABEL ${LABEL_PREFIX}.maintainer.url="https://github.com/grumpdumpty"
 # LABEL ${LABEL_PREFIX}.released="9999-99-99"
 # LABEL ${LABEL_PREFIX}.based-on="photon:5.0"
-# LABEL ${LABEL_PREFIX}.project="containers"
+# LABEL ${LABEL_PREFIX}.project="theworks"
 
 # update repositories
 RUN tdnf update -y && \
