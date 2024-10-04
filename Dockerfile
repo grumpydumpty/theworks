@@ -3,6 +3,7 @@ FROM photon:5.0
 # set argument defaults
 ARG OS_ARCH="amd64"
 ARG OS_ARCH2="x86_64"
+ARG HUGO_VARIANT="hugo_extended"
 ARG TANZU=10.109.195.161
 ARG USER=vlabs
 ARG USER_ID=1000
@@ -84,7 +85,7 @@ RUN pip3 install ansible-core && \
     pip3 install pywinrm[credssp] && \
     ansible-galaxy collection install ansible.windows
 
-# # grab kubectl vsphere plugins
+## grab kubectl vsphere plugins
 # RUN curl -skSLo vsphere-plugin.zip https://${TANZU}/wcp/plugin/linux-${OS_ARCH}/vsphere-plugin.zip && \
 #     unzip -d /usr/local vsphere-plugin.zip && \
 #     chown root:root /usr/local/bin/kubectl-vsphere && \
@@ -271,15 +272,22 @@ RUN LAZYDOCKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.
 RUN TINI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/krallin/tini/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -L https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-${ARCH} > /usr/local/bin/tini && \
     chmod 0755 /usr/local/bin/tini
-
+    
 # install hugo
-RUN VARIANT=${VARIANT} && \
-    HUGO_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/gohugoio/hugo/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo hugo.tar.gz https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${VARIANT}_${HUGO_VERSION}_linux-${ARCH}.tar.gz && \
+RUN HUGO_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/gohugoio/hugo/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo hugo.tar.gz https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${HUGO_VARIANT}_${HUGO_VERSION}_linux-${OS_ARCH}.tar.gz && \
     tar xzf hugo.tar.gz hugo && \    
     mv hugo /usr/local/bin && \
     chmod 0755 /usr/local/bin/hugo && \
     rm -rf hugo.tar.gz
+
+# install termsvg
+RUN TERMSVG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/MrMarble/termsvg/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo termsvg.tar.gz https://github.com/MrMarble/termsvg/releases/download/v${TERMSVG_VERSION}/termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}.tar.gz && \
+    tar xzf termsvg.tar.gz termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}/termsvg && \
+    mv termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}/termsvg /usr/local/bin && \
+    chmod 0755 /usr/local/bin/termsvg && \
+    rm -rf termsvg.tar.gz termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}
 
 # harden and remove unecessary packages
 RUN chown -R root:root /usr/local/bin/ && \
