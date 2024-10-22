@@ -60,6 +60,7 @@ RUN tdnf update -y && \
         python3-xml \
         shadow \
         tar \
+        tree \
         tmux \
         unzip \
         vim && \
