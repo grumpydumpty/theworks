@@ -13,7 +13,7 @@ IMAGE=theworks
 CONTAINER=$IMAGE
 
 # image tag
-TAG=dev
+TAG=dev 
 
 # image version
 VERSION=0.0.1
@@ -23,7 +23,7 @@ PROJECT="grumpydumpty/theworks"
 
 # maintainer info
 MAIN_USER="Richard Croft"
-MAIN_EMAIL="rcroft@vmware.com"
+MAIN_EMAIL="rcroft@omnissa.com"
 MAIN_URL="https://github.com/grumpydumpty"
 
 # below needs to match "ARG LABEL_PREFIX=" in Dockerfile
@@ -37,4 +37,5 @@ WORKDIR="/workspace"
 
 # repository to push image to
 #REPO=harbor.sydeng.vmware.com/rcroft
-REPO=ghcr.io/grumpydumpty/${IMAGE}
+#REPO=ghcr.io/grumpydumpty/${IMAGE}
+REPO=artifactory.build.omnissa.com/uem-platform-eng-docker
