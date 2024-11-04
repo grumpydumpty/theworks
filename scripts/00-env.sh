@@ -13,7 +13,7 @@ IMAGE=theworks
 CONTAINER=$IMAGE
 
 # image tag
-TAG=dev 
+TAG=dev
 
 # image version
 VERSION=0.0.1
