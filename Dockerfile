@@ -289,6 +289,14 @@ RUN TERMSVG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com
     mv termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}/termsvg /usr/local/bin && \
     chmod 0755 /usr/local/bin/termsvg && \
     rm -rf termsvg.tar.gz termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}
+    
+# install yq
+RUN YQ_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/mikefarah/yq/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo yq.tar.gz https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_${OS_ARCH}.tar.gz && \
+    tar xzf yq.tar.gz ./yq_linux_${OS_ARCH} && \    
+    mv yq_linux_${OS_ARCH} /usr/local/bin/yq && \
+    chmod 0755 /usr/local/bin/yq && \
+    rm -rf yq.tar.gz
 
 # harden and remove unecessary packages
 RUN chown -R root:root /usr/local/bin/ && \
