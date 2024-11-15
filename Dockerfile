@@ -209,8 +209,8 @@ RUN TERRAFORMDOCS_VERSION=$(curl -H 'Accept: application/json' -sSL https://gith
 # grab terramaid
 RUN TERRAMAID_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/RoseSecurity/Terramaid/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo terramaid.tar.gz https://github.com/RoseSecurity/Terramaid/releases/download/v${TERRAMAID_VERSION}/terramaid_linux_${OS_ARCH2}.tar.gz && \
-    tar xzf terramaid.tar.gz terramaid && \
-    mv terramaid /usr/local/bin && \
+    tar xzf terramaid.tar.gz Terramaid && \
+    mv Terramaid /usr/local/bin/terramaid && \
     chown root:root /usr/local/bin/terramaid && \
     chmod 0755 /usr/local/bin/terramaid && \
     rm -f terramaid.tar.gz
