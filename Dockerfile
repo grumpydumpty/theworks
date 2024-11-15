@@ -206,6 +206,15 @@ RUN TERRAFORMDOCS_VERSION=$(curl -H 'Accept: application/json' -sSL https://gith
     chmod 0755 /usr/local/bin/terraform-docs && \
     rm -f terraform-docs.tar.gz
 
+# grab terramaid
+RUN TERRAMAID_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/RoseSecurity/Terramaid/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo terramaid.tar.gz https://github.com/RoseSecurity/Terramaid/releases/download/v${TERRAMAID_VERSION}/terramaid_linux_${OS_ARCH2}.tar.gz && \
+    tar xzf terramaid.tar.gz terramaid && \
+    mv terramaid /usr/local/bin && \
+    chown root:root /usr/local/bin/terramaid && \
+    chmod 0755 /usr/local/bin/terramaid && \
+    rm -f terramaid.tar.gz
+
 # grab terrascan
 RUN TERRASCAN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tenable/terrascan/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo terrascan.tar.gz https://github.com/tenable/terrascan/releases/download/v${TERRASCAN_VERSION}/terrascan_${TERRASCAN_VERSION}_linux_${OS_ARCH2}.tar.gz && \
@@ -225,13 +234,13 @@ RUN TFNOTIFY_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.co
     rm -f tfnotify.tar.gz
 
 # grab tfcmt
-RUN TFNOTIFY_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/suzuki-shunsuke/tfcmt/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-curl -skSLo tfcmt.tar.gz https://github.com/suzuki-shunsuke/tfcmt/releases/download/v${TFNOTIFY_VERSION}/tfcmt_linux_${OS_ARCH}.tar.gz && \
-tar xzf tfcmt.tar.gz tfcmt && \
-mv tfcmt /usr/local/bin && \
-chown root:root /usr/local/bin/tfcmt && \
-chmod 0755 /usr/local/bin/tfcmt && \
-rm -f tfcmt.tar.gz
+RUN TFCMT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/suzuki-shunsuke/tfcmt/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo tfcmt.tar.gz https://github.com/suzuki-shunsuke/tfcmt/releases/download/v${TFCMT_VERSION}/tfcmt_linux_${OS_ARCH}.tar.gz && \
+    tar xzf tfcmt.tar.gz tfcmt && \
+    mv tfcmt /usr/local/bin && \
+    chown root:root /usr/local/bin/tfcmt && \
+    chmod 0755 /usr/local/bin/tfcmt && \
+    rm -f tfcmt.tar.gz
 
 # grab tfsec (depreciated)
 RUN TFSEC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/aquasecurity/tfsec/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
