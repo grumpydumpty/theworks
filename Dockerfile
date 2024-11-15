@@ -224,6 +224,15 @@ RUN TFNOTIFY_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.co
     chmod 0755 /usr/local/bin/tfnotify && \
     rm -f tfnotify.tar.gz
 
+# grab tfcmt
+RUN TFNOTIFY_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/suzuki-shunsuke/tfcmt/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+curl -skSLo tfcmt.tar.gz https://github.com/suzuki-shunsuke/tfcmt/releases/download/v${TFNOTIFY_VERSION}/tfcmt_linux_${OS_ARCH}.tar.gz && \
+tar xzf tfcmt.tar.gz tfcmt && \
+mv tfcmt /usr/local/bin && \
+chown root:root /usr/local/bin/tfcmt && \
+chmod 0755 /usr/local/bin/tfcmt && \
+rm -f tfcmt.tar.gz
+
 # grab tfsec (depreciated)
 RUN TFSEC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/aquasecurity/tfsec/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo tfsec.tar.gz https://github.com/aquasecurity/tfsec/releases/download/v${TFSEC_VERSION}/tfsec_${TFSEC_VERSION}_linux_${OS_ARCH}.tar.gz && \
