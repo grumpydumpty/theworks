@@ -47,6 +47,7 @@ RUN tdnf update -y && \
         htop \
         jq \
         less \
+        icu \
         mc \
         ncurses \
         nodejs \
@@ -166,7 +167,8 @@ RUN VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://git
     packer plugins install github.com/hashicorp/vsphere ${VSPHERE_PLUGIN_VERSION}
 
 # grab terraform
-RUN TERRAFORM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/terraform/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+# RUN TERRAFORM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/terraform/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+RUN TERRAFORM_VERSION='1.9.8' && \
     curl -skSLo terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${OS_ARCH}.zip && \
     unzip -o -d /usr/local/bin/ terraform.zip && \
     chown root:root /usr/local/bin/terraform && \
@@ -291,11 +293,11 @@ RUN LAZYDOCKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.
 RUN TINI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/krallin/tini/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -L https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-${ARCH} > /usr/local/bin/tini && \
     chmod 0755 /usr/local/bin/tini
-    
+
 # install hugo
 RUN HUGO_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/gohugoio/hugo/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo hugo.tar.gz https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${HUGO_VARIANT}_${HUGO_VERSION}_linux-${OS_ARCH}.tar.gz && \
-    tar xzf hugo.tar.gz hugo && \    
+    tar xzf hugo.tar.gz hugo && \
     mv hugo /usr/local/bin && \
     chmod 0755 /usr/local/bin/hugo && \
     rm -rf hugo.tar.gz
@@ -307,14 +309,23 @@ RUN TERMSVG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com
     mv termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}/termsvg /usr/local/bin && \
     chmod 0755 /usr/local/bin/termsvg && \
     rm -rf termsvg.tar.gz termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}
-    
+
 # install yq
 RUN YQ_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/mikefarah/yq/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo yq.tar.gz https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_${OS_ARCH}.tar.gz && \
-    tar xzf yq.tar.gz ./yq_linux_${OS_ARCH} && \    
+    tar xzf yq.tar.gz ./yq_linux_${OS_ARCH} && \
     mv yq_linux_${OS_ARCH} /usr/local/bin/yq && \
     chmod 0755 /usr/local/bin/yq && \
     rm -rf yq.tar.gz
+
+# install .net sdk
+RUN DOTNETSDK_VERSION="8.0.404" && \
+    DOTNET_ARCH="x64" && \
+    curl -skSLo dotnet-sdk.tar.gz https://dotnetcli.azureedge.net/dotnet/Sdk/${DOTNET_SDK_VERSION}/dotnet-sdk-${DOTNET_SDK_VERSION}-linux-${DOTNET_ARCH}.tar.gz && \
+    mkdir -p /usr/share/dotnet && tar xzf dotnet-sdk.tar.gz -C /usr/share/dotnet && \
+    export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true && \
+    export DOTNET_ROOT=/usr/share/dotnet && \
+    export PATH=$PATH:$DOTNET_ROOT
 
 # harden and remove unecessary packages
 RUN chown -R root:root /usr/local/bin/ && \
