@@ -316,6 +316,23 @@ RUN YQ_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/mike
     chmod 0755 /usr/local/bin/yq && \
     rm -rf yq.tar.gz
 
+# install marp-cli
+RUN MARP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/marp-team/marp-cli/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo marp.tar.gz https://github.commarp-team/marp-cli/releases/download/v${MARP_VERSION}/marp-cli-v${MARP_VERSION}-linux.tar.gz && \
+    tar xzf marp.tar.gz ./marp && \
+    mv marp /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/marp && \
+    rm -rf mar.tar.gz
+
+# install .net sdk
+# RUN DOTNETSDK_VERSION="8.0.404" && \
+#     DOTNET_ARCH="x64" && \
+#     curl -skSLo dotnet-sdk.tar.gz https://dotnetcli.azureedge.net/dotnet/Sdk/${DOTNET_SDK_VERSION}/dotnet-sdk-${DOTNET_SDK_VERSION}-linux-${DOTNET_ARCH}.tar.gz && \
+#     mkdir -p /usr/share/dotnet && tar xzf dotnet-sdk.tar.gz -C /usr/share/dotnet && \
+#     export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true && \
+#     export DOTNET_ROOT=/usr/share/dotnet && \
+#     export PATH=$PATH:$DOTNET_ROOT
+
 # harden and remove unecessary packages
 RUN chown -R root:root /usr/local/bin/ && \
     chown root:root /var/log && \
