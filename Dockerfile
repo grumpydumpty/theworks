@@ -319,11 +319,11 @@ RUN YQ_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/mike
 
 # install marp-cli
 RUN MARP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/marp-team/marp-cli/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo marp.tar.gz https://github.commarp-team/marp-cli/releases/download/v${MARP_VERSION}/marp-cli-v${MARP_VERSION}-linux.tar.gz && \
-    tar xzf marp.tar.gz ./marp && \
-    mv marp /usr/local/bin/ && \
+    curl -skSLo marp.tar.gz https://github.com/marp-team/marp-cli/releases/download/v${MARP_VERSION}/marp-cli-v${MARP_VERSION}-linux.tar.gz && \
+    tar xzf marp.tar.gz marp && \
+    mv ./marp /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/marp && \
-    rm -rf mar.tar.gz
+    rm -rf marp.tar.gz
 
 # install .net sdk
 # RUN DOTNETSDK_VERSION="8.0.404" && \
