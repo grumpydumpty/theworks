@@ -37,6 +37,7 @@ RUN tdnf update -y && \
     tdnf install -y \
         ansible \
         bash \
+        bindutils \
         ca-certificates \
         cdrkit \
         coreutils \
