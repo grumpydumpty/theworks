@@ -326,6 +326,14 @@ RUN MARP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/ma
     chmod 0755 /usr/local/bin/marp && \
     rm -rf marp.tar.gz
 
+## install scc - https://github.com/boyter/scc/releases/download/v3.4.0/scc_Linux_x86_64.tar.gz
+# RUN SCC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/boyter/scc/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+#     curl -skSLo scc.tar.gz https://github.com/boyter/scc/releases/download/v${SCC_VERSION}/scc_Linux_x86_64.tar.gz && \
+#     tar xzf scc.tar.gz scc && \
+#     mv ./scc /usr/local/bin/ && \
+#     chmod 0755 /usr/local/bin/scc && \
+#     rm -rf scc.tar.gz
+
 # install .net sdk
 # RUN DOTNETSDK_VERSION="8.0.404" && \
 #     DOTNET_ARCH="x64" && \
