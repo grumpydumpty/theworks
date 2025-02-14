@@ -11,7 +11,7 @@ docker build                                                                    
     --label "$LABEL_PREFIX.version=$VERSION"                                                      \
     --label "$LABEL_PREFIX.git.repo=$(git remote -v | cut -f2 | cut -f1 -d' ' | uniq | head -n1)" \
     --label "$LABEL_PREFIX.git.commit=$(git rev-parse --short HEAD)"                              \
-    --label "$LABEL_PREFIX.maintainer.name=$MAIN_USER"                                            \
+    --label "$LABEL_PREFIX.maintainer.name=$MAIN_NAME"                                            \
     --label "$LABEL_PREFIX.maintainer.email=$MAIN_EMAIL"                                          \
     --label "$LABEL_PREFIX.maintainer.url=$MAIN_URL"                                              \
     --label "$LABEL_PREFIX.builder.name=$(git config user.name)"                                  \

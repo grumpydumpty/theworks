@@ -10,7 +10,7 @@ source scripts/00-env.sh
 # pip install --no-cache-dir -r requirements.txt
 
 # setup git (be sure to set them in 00-env.sh)
-git config --global user.name $MAIN_USER
+git config --global user.name $MAIN_NAME
 git config --global user.email $MAIN_EMAIL
 git config --global --add safe.directory "/workspace"
 
