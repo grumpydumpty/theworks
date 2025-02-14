@@ -5,6 +5,8 @@ ARG OS_ARCH="amd64"
 ARG OS_ARCH2="x86_64"
 ARG HUGO_VARIANT="hugo_extended"
 ARG VCENTER=10.109.195.161
+ARG USER=vlabs
+ARG GROUP=users
 
 # Switch to root to install OS packages
 USER root:root
@@ -300,7 +302,7 @@ RUN chown -R root:root /usr/local/bin/ && \
     chmod 755 /usr/lib/
 
 # switch back to non-root user
-USER ${USER}
+USER ${USER}:${GROUP}
 
 #############################################################################
 # vim: ft=unix sync=dockerfile ts=4 sw=4 et tw=78:
