@@ -31,7 +31,8 @@ RUN tdnf update -y && \
 # install mkdocs, mkdocs-material, and desired plugins
 COPY ./requirements.txt .
 RUN pip3 install --no-cache-dir --upgrade pip && \
-    pip3 install --no-cache-dir -r ./requirements.txt
+    pip3 install --no-cache-dir -r ./requirements.txt && \
+    rm requirements.txt
 
 # install ansible
 RUN pip3 install ansible-core && \
@@ -51,7 +52,7 @@ RUN curl -skSLo gitflow-installer.sh https://raw.githubusercontent.com/petervand
     ./gitflow-installer.sh install stable && \
     chown root:root /usr/local/bin/git-flow && \
     chmod 0755 /usr/local/bin/git-flow && \
-    rm -rf ./gitflow-installer.sh /gitflow/
+    rm -rf ./gitflow-installer.sh ./gitflow/
 
 # grab git-lfs
 RUN GIT_LFS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/git-lfs/git-lfs/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
