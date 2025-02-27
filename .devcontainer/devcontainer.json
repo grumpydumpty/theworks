@@ -3,12 +3,15 @@
 {
     "name": "mkdocs devcontainer",
     // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-    "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+    // "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
 
     // Features to add to the dev container. More info: https://containers.dev/features.
-    "features": {
-        "ghcr.io/devcontainers-contrib/features/mkdocs:2": {}
-    },
+    // "features": {
+    //     "ghcr.io/devcontainers-contrib/features/mkdocs:2": {}
+    // },
 
     // Configure tool-specific properties.
     "customizations": {
@@ -16,11 +19,39 @@
         "vscode": {			
             // Add the IDs of extensions you want installed when the container is created.
             "extensions": [
-                "yzhang.markdown-all-in-one",
                 "streetsidesoftware.code-spell-checker",
-                "DavidAnson.vscode-markdownlint",
-                "shd101wyy.markdown-preview-enhanced",
-                "bierner.github-markdown-preview"
+                "darkriszty.markdown-table-prettify",
+                // "DavidAnson.vscode-markdownlint",
+                // "alanwalk.markdown-toc",
+                // "bierner.github-markdown-preview",
+                // "bierner.markdown-checkbox",
+                // "bierner.markdown-footnotes",
+                // "bierner.markdown-mermaid",
+                // "bierner.markdown-preview-github-styles",
+                // "bierner.markdown-yaml-preamble",
+                // "blackmist.linkcheckmd",
+                // "darkriszty.markdown-table-prettify",
+                // "davidanson.vscode-markdownlint",
+                // "docsmsft.docs-article-templates",
+                // "docsmsft.docs-authoring-pack",
+                // "docsmsft.docs-build",
+                // "docsmsft.docs-images",
+                // "docsmsft.docs-linting",
+                // "docsmsft.docs-markdown",
+                // "docsmsft.docs-metadata",
+                // "docsmsft.docs-preview",
+                // "docsmsft.docs-scaffolding",
+                // "docsmsft.docs-visual-areas",
+                // "docsmsft.docs-yaml",
+                // "editorconfig.editorconfig",
+                // "mermaidchart.vscode-mermaid-chart",
+                // "redhat.vscode-commons",
+                // "redhat.vscode-xml",
+                // "redhat.vscode-yaml",
+                // "shd101wyy.markdown-preview-enhanced",
+                // "streetsidesoftware.code-spell-checker",
+                // "yzhang.markdown-all-in-one"                
+                // "yzhang.markdown-all-in-one",
             ]
         }
     },
