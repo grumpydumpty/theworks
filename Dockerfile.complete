@@ -34,6 +34,7 @@ RUN tdnf update -y && \
         htop \
         jq \
         less \
+        make \
         mc \
         ncurses \
         nodejs \
@@ -70,7 +71,13 @@ RUN tdnf update -y && \
     git config --system --add safe.directory "/workspace" && \
     # clean up
     tdnf erase -y shadow && \
-    tdnf clean all
+    tdnf clean all && \
+    # harden and remove unnecessary packages
+    chown -R root:root /usr/local/bin/ && \
+    chown root:root /var/log && \
+    chmod 0640 /var/log && \
+    chown root:root /usr/lib/ && \
+    chmod 755 /usr/lib/
 
 # install mkdocs, mkdocs-material, and desired plugins
 COPY ./requirements.txt .
@@ -337,13 +344,6 @@ RUN MARP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/ma
 #     export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true && \
 #     export DOTNET_ROOT=/usr/share/dotnet && \
 #     export PATH=$PATH:$DOTNET_ROOT
-
-# harden and remove unnecessary packages
-RUN chown -R root:root /usr/local/bin/ && \
-    chown root:root /var/log && \
-    chmod 0640 /var/log && \
-    chown root:root /usr/lib/ && \
-    chmod 755 /usr/lib/
 
 # set user
 USER ${USER}

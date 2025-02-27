@@ -295,13 +295,6 @@ RUN MARP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/ma
 #     export DOTNET_ROOT=/usr/share/dotnet && \
 #     export PATH=$PATH:$DOTNET_ROOT
 
-# harden and remove unnecessary packages
-RUN chown -R root:root /usr/local/bin/ && \
-    chown root:root /var/log && \
-    chmod 0640 /var/log && \
-    chown root:root /usr/lib/ && \
-    chmod 755 /usr/lib/
-
 # switch back to non-root user
 USER ${USER}:${GROUP}
 
