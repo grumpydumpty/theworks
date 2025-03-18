@@ -25,6 +25,7 @@ RUN tdnf update -y && \
         python3-pyyaml \
         python3-resolvelib \
         python3-xml && \
+        xorriso && \
     # clean up
     tdnf clean all
 
@@ -105,6 +106,13 @@ RUN CLUSTERCTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.
     mv clusterctl /usr/local/bin/clusterctl && \
     chown root:root /usr/local/bin/clusterctl && \
     chmod 0755 /usr/local/bin/clusterctl
+
+# grab gomplate
+RUN GOMPLATE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo gomplate https://github.com/hairyhenderson/gomplate/releases/download/v${GOMPLATE_VERSION}/gomplate_linux-${OS_ARCH} && \
+    mv gomplate /usr/local/bin/ && \
+    chown root:root /usr/local/bin/gomplate && \
+    chmod 0755 /usr/local/bin/gomplate
 
 # grab packer
 RUN PACKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
