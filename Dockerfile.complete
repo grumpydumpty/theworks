@@ -31,6 +31,7 @@ RUN tdnf update -y && \
         findutils \
         gawk \
         git \
+        gnupg \
         htop \
         jq \
         less \
@@ -48,8 +49,8 @@ RUN tdnf update -y && \
         python3-xml \
         shadow \
         tar \
-        tree \
         tmux \
+        tree \
         unzip \
         vim && \
     # add user/group
@@ -327,6 +328,22 @@ RUN MARP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/ma
     mv ./marp /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/marp && \
     rm -rf marp.tar.gz
+
+# install docker hub-tool cli
+RUN HUB_TOOL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/docker/hub-tool/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo hub-tool.tar.gz https://github.com/docker/hub-tool/releases/download/v${HUB_TOOL_VERSION}/hub-tool-linux-${OS_ARCH}.tar.gz && \
+    tar xzf hub-tool.tar.gz hub-tool/hub-tool && \
+    mv hub-tool/hub-tool /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/hub-tool && \
+    rm -rf hub-tool.tar.gz hub-tool/
+
+# install vale cli
+RUN VALE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/errata-ai/vale/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo vale.tar.gz https://github.com/errata-ai/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz && \
+    tar xzf vale.tar.gz vale && \
+    mv vale /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/vale && \
+    rm -rf vale.tar.gz
 
 ## install scc - https://github.com/boyter/scc/releases/download/v3.4.0/scc_Linux_x86_64.tar.gz
 # RUN SCC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/boyter/scc/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
