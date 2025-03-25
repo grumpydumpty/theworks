@@ -301,6 +301,30 @@ RUN VALE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/er
     chmod 0755 /usr/local/bin/vale && \
     rm -rf vale.tar.gz
 
+# install fd
+RUN FD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/sharkdp/fd/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo fd.tar.gz https://github.com/sharkdp/fd/releases/download/v${FD_VERSION}/fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    tar xzf fd.tar.gz && \
+    mv fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu/fd /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/fd && \
+    rm -rf fd.tar.gz fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu
+
+# install bat
+RUN BAT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/sharkdp/bat/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo bat.tar.gz https://github.com/sharkdp/bat/releases/download/v${BAT_VERSION}/bat-v${BAT_VERSION}-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    tar xzf bat.tar.gz && \
+    mv bat-v${BAT_VERSION}-${OS_ARCH2}-unknown-linux-gnu/bat /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/bat && \
+    rm -rf bat.tar.gz bat-v${BAT_VERSION}-${OS_ARCH2}-unknown-linux-gnu
+
+# install fzf
+RUN FZF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/junegunn/fzf/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo fzf.tar.gz https://github.com/junegunn/fzf/releases/download/v${FZF_VERSION}/fzf-${FZF_VERSION}-linux_${OS_ARCH}.tar.gz && \
+    tar xzf fzf.tar.gz && \
+    mv fzf /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/fzf && \
+    rm -rf fzf.tar.gz
+
 ## install scc (i.e. sloc, cloc, code)
 # RUN SCC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/boyter/scc/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
 #     curl -skSLo scc.tar.gz https://github.com/boyter/scc/releases/download/v${SCC_VERSION}/scc_Linux_x86_64.tar.gz && \
