@@ -317,6 +317,14 @@ RUN BAT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/sha
     chmod 0755 /usr/local/bin/bat && \
     rm -rf bat.tar.gz bat-v${BAT_VERSION}-${OS_ARCH2}-unknown-linux-gnu
 
+# install ripgrep
+RUN RIPGREP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/BurntSushi/ripgrep/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo ripgrep.tar.gz https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-${OS_ARCH2}-unknown-linux-musl.tar.gz && \
+    tar xzf ripgrep.tar.gz && \
+    mv ripgrep-${RIPGREP_VERSION}-${OS_ARCH2}-unknown-linux-musl/rg /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/rg && \
+    rm -rf ripgrep.tar.gz ripgrep-${RIPGREP_VERSION}-${OS_ARCH2}-unknown-linux-musl
+
 # install fzf
 RUN FZF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/junegunn/fzf/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo fzf.tar.gz https://github.com/junegunn/fzf/releases/download/v${FZF_VERSION}/fzf-${FZF_VERSION}-linux_${OS_ARCH}.tar.gz && \
@@ -324,6 +332,14 @@ RUN FZF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jun
     mv fzf /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/fzf && \
     rm -rf fzf.tar.gz
+
+# install skim
+RUN SKIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/skim-rs/skim/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+curl -skSLo skim.tar.gz https://github.com/skim-rs/skim/releases/download/v${SKIM_VERSION}/skim-${OS_ARCH2}-unknown-linux-musl.tgz && \
+tar xzf skim.tar.gz && \
+mv sk /usr/local/bin/ && \
+chmod 0755 /usr/local/bin/sk && \
+rm -rf skim.tar.gz
 
 # install oras
 RUN ORAS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/oras-project/oras/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
