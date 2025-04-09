@@ -301,6 +301,22 @@ RUN VALE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/er
     chmod 0755 /usr/local/bin/vale && \
     rm -rf vale.tar.gz
 
+# install oras
+RUN ORAS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/oras-project/oras/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo oras.tar.gz "https://github.com/oras-project/oras/releases/download/v${ORAS_VERSION}/oras_${ORAS_VERSION}_linux_${OS_ARCH}.tar.gz" && \
+    tar -xzf oras.tar.gz oras && \
+    mv oras /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/oras && \
+    rm -rf oras.tar.gz
+
+# install crictl
+RUN CRICTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/kubernetes-sigs/cri-tools/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo crictl.tar.gz https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRICTL_VERSION}/crictl-v${CRICTL_VERSION}-linux-${OS_ARCH}.tar.gz && \
+    tar xzf crictl.tar.gz crictl && \
+    mv crictl /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/crictl && \
+    rm -f crictl.tar.gz
+
 # install fd
 RUN FD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/sharkdp/fd/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo fd.tar.gz https://github.com/sharkdp/fd/releases/download/v${FD_VERSION}/fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
@@ -335,27 +351,19 @@ RUN FZF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jun
 
 # install skim
 RUN SKIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/skim-rs/skim/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-curl -skSLo skim.tar.gz https://github.com/skim-rs/skim/releases/download/v${SKIM_VERSION}/skim-${OS_ARCH2}-unknown-linux-musl.tgz && \
-tar xzf skim.tar.gz && \
-mv sk /usr/local/bin/ && \
-chmod 0755 /usr/local/bin/sk && \
-rm -rf skim.tar.gz
+    curl -skSLo skim.tar.gz https://github.com/skim-rs/skim/releases/download/v${SKIM_VERSION}/skim-${OS_ARCH2}-unknown-linux-musl.tgz && \
+    tar xzf skim.tar.gz && \
+    mv sk /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/sk && \
+    rm -rf skim.tar.gz
 
-# install oras
-RUN ORAS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/oras-project/oras/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo oras.tar.gz "https://github.com/oras-project/oras/releases/download/v${ORAS_VERSION}/oras_${ORAS_VERSION}_linux_${OS_ARCH}.tar.gz" && \
-    tar -xzf oras.tar.gz oras && \
-    mv oras /usr/local/bin/ && \
-    chmod 0755 /usr/local/bin/oras && \
-    rm -rf oras.tar.gz
-
-# install crictl
-RUN CRICTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/kubernetes-sigs/cri-tools/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo crictl.tar.gz https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRICTL_VERSION}/crictl-v${CRICTL_VERSION}-linux-${OS_ARCH}.tar.gz && \
-    tar xzf crictl.tar.gz crictl && \
-    mv crictl /usr/local/bin/ && \
-    chmod 0755 /usr/local/bin/crictl && \
-    rm -f crictl.tar.gz
+# install dockerfmt
+RUN DOCKERFMT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/reteps/dockerfmt/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo dockerfmt.tar.gz https://github.com/reteps/dockerfmt/releases/download/${DOCKERFMT_VERSION}/dockerfmt-${DOCKERFMT_VERSION}-linux-${OS_ARCH}.tar.gz && \
+    tar xzf dockerfmt.tar.gz && \
+    mv dockerfmt /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/dockerfmt && \
+    rm -rf dockerfmt.tar.gz
 
 ## install scc (i.e. sloc, cloc, code)
 # RUN SCC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/boyter/scc/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
