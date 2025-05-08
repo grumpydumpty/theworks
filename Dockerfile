@@ -116,7 +116,8 @@ RUN GOMPLATE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.co
 # grab packer
 RUN PACKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo packer.zip https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip && \
-    unzip -o -d /usr/local/bin/ packer.zip && \
+    unzip packer.zip packer && \
+    mv packer /usr/local/bin/ && \
     chown root:root /usr/local/bin/packer && \
     chmod 0755 /usr/local/bin/packer && \
     rm -f packer.zip
@@ -128,7 +129,8 @@ RUN VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://git
 # grab terraform
 RUN TERRAFORM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/terraform/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${OS_ARCH}.zip && \
-    unzip -o -d /usr/local/bin/ terraform.zip && \
+    unzip terraform.zip terraform && \
+    mv terraform /usr/local/bin/ && \
     chown root:root /usr/local/bin/terraform && \
     chmod 0755 /usr/local/bin/terraform && \
     rm -f terraform.zip
@@ -136,7 +138,8 @@ RUN TERRAFORM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.c
 # grab nomad
 RUN NOMAD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/nomad/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_${OS_ARCH}.zip && \
-    unzip -o -d /usr/local/bin/ nomad.zip && \
+    unzip nomad.zip nomad && \
+    mv nomad /usr/local/bin/ && \
     chown root:root /usr/local/bin/nomad && \
     chmod 0755 /usr/local/bin/nomad && \
     rm -f nomad.zip
@@ -144,7 +147,8 @@ RUN NOMAD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/h
 # grab consul
 RUN CONSUL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/consul/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_${OS_ARCH}.zip && \
-    unzip -o -d /usr/local/bin/ consul.zip && \
+    unzip consul.zip consul && \
+    mv consul /usr/local/bin/ && \
     chown root:root /usr/local/bin/consul && \
     chmod 0755 /usr/local/bin/consul && \
     rm -f consul.zip
@@ -152,7 +156,8 @@ RUN CONSUL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
 # grab vault
 RUN VAULT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/vault/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo vault.zip https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_${OS_ARCH}.zip && \
-    unzip -o -d /usr/local/bin/ vault.zip && \
+    unzip vault.zip vault && \
+    mv vault /usr/local/bin && \
     chown root:root /usr/local/bin/vault && \
     chmod 0755 /usr/local/bin/vault && \
     rm -f vault.zip
@@ -359,19 +364,46 @@ RUN SKIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/sk
 
 # install dockerfmt
 RUN DOCKERFMT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/reteps/dockerfmt/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo dockerfmt.tar.gz https://github.com/reteps/dockerfmt/releases/download/${DOCKERFMT_VERSION}/dockerfmt-${DOCKERFMT_VERSION}-linux-${OS_ARCH}.tar.gz && \
+    curl -skSLo dockerfmt.tar.gz https://github.com/reteps/dockerfmt/releases/download/v${DOCKERFMT_VERSION}/dockerfmt-v${DOCKERFMT_VERSION}-linux-${OS_ARCH}.tar.gz && \
     tar xzf dockerfmt.tar.gz && \
     mv dockerfmt /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/dockerfmt && \
     rm -rf dockerfmt.tar.gz
 
-## install scc (i.e. sloc, cloc, code)
-# RUN SCC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/boyter/scc/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-#     curl -skSLo scc.tar.gz https://github.com/boyter/scc/releases/download/v${SCC_VERSION}/scc_Linux_x86_64.tar.gz && \
-#     tar xzf scc.tar.gz scc && \
-#     mv ./scc /usr/local/bin/ && \
-#     chmod 0755 /usr/local/bin/scc && \
-#     rm -rf scc.tar.gz
+# install atuin
+RUN ATUIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/atuinsh/atuin/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo atuin.tar.gz https://github.com/atuinsh/atuin/releases/download/${ATUIN_VERSION}/atuin-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    tar xzf atuin.tar.gz && \
+    mv atuin-${OS_ARCH2}-unknown-linux-gnu/atuin /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/atuin && \
+    rm -rf atuin.tar.gz atuin-${OS_ARCH2}-unknown-linux-gnu/
+
+# install threatcl (threat modelling configuration language with hcl)
+RUN THREATCL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/threatcl/threatcl/releases/latest | jq -r '.id') && \
+    THREATCL_DOWNLOAD_URL=$(curl -H 'Accept: application/json' -sSL https://api.github.com/repos/threatcl/threatcl/releases/${THREATCL_VERSION} |  jq -r '.assets[] | select( .browser_download_url | contains("linux-amd64")) | .browser_download_url') && \
+    curl -skSLo threatcl.tar.gz ${THREATCL_DOWNLOAD_URL} && \
+    tar xzf threatcl.tar.gz && \
+    mv threatcl /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/threatcl && \
+    rm -rf threatcl.tar.gz
+
+# install wtf
+RUN WTF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/wtfutil/wtf/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo wtf.tar.gz https://github.com/wtfutil/wtf/releases/download/v${WTF_VERSION}/wtf_${WTF_VERSION}_linux_${OS_ARCH}.tar.gz && \
+    mkdir ~/.config/wtf/ && \
+    curl -skSLo ~/.config/wtf/config.yml https://raw.githubusercontent.com/wtfutil/wtf/refs/heads/master/_sample_configs/sample_config.yml && \
+    tar xzf wtf.tar.gz && \
+    mv wtf_${WTF_VERSION}_linux_${OS_ARCH}/wtfutil /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/wtfutil && \
+    rm -rf wtf.tar.gz wtf_${WTF_VERSION}_linux_${OS_ARCH}/
+
+# install scc (i.e. sloc, cloc, code)
+RUN SCC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/boyter/scc/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo scc.tar.gz https://github.com/boyter/scc/releases/download/v${SCC_VERSION}/scc_Linux_x86_64.tar.gz && \
+    tar xzf scc.tar.gz scc && \
+    mv ./scc /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/scc && \
+    rm -rf scc.tar.gz
 
 # install .net sdk
 # RUN DOTNETSDK_VERSION="8.0.404" && \
@@ -381,6 +413,16 @@ RUN DOCKERFMT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.c
 #     export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true && \
 #     export DOTNET_ROOT=/usr/share/dotnet && \
 #     export PATH=$PATH:$DOTNET_ROOT
+
+#############################################################################
+##
+## Would be nice if projects could come up with standard naming convention:
+## e.g.
+##     echo "project-version-$(uname -s)-$(uname -m).tar.gz" | tr '[A-Z]' '[a-z]'
+##
+## This would make the above steps more consistent and easier to automate.
+##
+#############################################################################
 
 # switch back to non-root user
 USER ${USER}:${GROUP}
