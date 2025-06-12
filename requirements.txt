@@ -1,4 +1,5 @@
-# mkdocs and its pre-reqs
+#############################################################################
+## mkdocs and its pre-reqs
 mkdocs
 mkdocs-material
 mkdocs-git-authors-plugin
@@ -9,13 +10,21 @@ mkdocs-open-in-new-tab
 mkdocs-rss-plugin
 mkdocs-swagger-ui-tag
 neoteroi-mkdocs
+#############################################################################
 ## textualize.io apps
 #frogmouth
 #baca
 ## ranger file manager
 #ranger-fm
-# asciinema etc
+#############################################################################
+## asciinema etc
 asciinema
 asciinema-scene
+#############################################################################
 ## console markdown presentation app
 present
+#############################################################################
+## db tools
+#litecli
+#pgcli
+#mycli

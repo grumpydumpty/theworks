@@ -107,7 +107,7 @@ RUN CLUSTERCTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.
     chmod 0755 /usr/local/bin/clusterctl
 
 # grab gomplate
-RUN GOMPLATE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+RUN GOMPLATE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hairyhenderson/gomplate/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo gomplate https://github.com/hairyhenderson/gomplate/releases/download/v${GOMPLATE_VERSION}/gomplate_linux-${OS_ARCH} && \
     mv gomplate /usr/local/bin/ && \
     chown root:root /usr/local/bin/gomplate && \
@@ -255,7 +255,7 @@ RUN LAZYDOCKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.
 
 # install tini
 RUN TINI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/krallin/tini/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -L https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-${ARCH} > /usr/local/bin/tini && \
+    curl -skSLo /usr/local/bin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-${OS_ARCH} && \
     chmod 0755 /usr/local/bin/tini
     
 # install hugo
@@ -372,7 +372,7 @@ RUN DOCKERFMT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.c
 
 # install atuin
 RUN ATUIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/atuinsh/atuin/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo atuin.tar.gz https://github.com/atuinsh/atuin/releases/download/${ATUIN_VERSION}/atuin-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    curl -skSLo atuin.tar.gz https://github.com/atuinsh/atuin/releases/download/v${ATUIN_VERSION}/atuin-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
     tar xzf atuin.tar.gz && \
     mv atuin-${OS_ARCH2}-unknown-linux-gnu/atuin /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/atuin && \
@@ -413,6 +413,14 @@ RUN TLDR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tl
     chmod 0755 /usr/local/bin/tldr && \
     rm -rf tldr.tar.gz
 
+# install oama
+# RUN OAMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/pdobsan/oama/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+#     curl -skSLo oama.tar.gz https://github.com/pdobsan/oama/releases/download/${OAMA_VERSION}/oama-${OAMA_VERSION}-Linux-${OS_ARCH2}.tar.gz && \
+#     tar xzf oama.tar.gz oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/oama && \
+#     mv oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/oama /usr/local/bin/ && \
+#     chmod 0755 /usr/local/bin/oama && \
+#     rm -rf oama.tar.gz oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/
+
 # install .net sdk
 # RUN DOTNETSDK_VERSION="8.0.404" && \
 #     DOTNET_ARCH="x64" && \
@@ -421,6 +429,12 @@ RUN TLDR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tl
 #     export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true && \
 #     export DOTNET_ROOT=/usr/share/dotnet && \
 #     export PATH=$PATH:$DOTNET_ROOT
+
+# install ctop (not really for running inside containers)
+# RUN CTOP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/bcicen/ctop/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+#     curl -skSLo ctop https://github.com/bcicen/ctop/releases/download/v${CTOP_VERSION}/ctop-${CTOP_VERSION}-linux-${OS_ARCH} && \
+#     mv ./ctop /usr/local/bin/ && \
+#     chmod 0755 /usr/local/bin/ctop
 
 #############################################################################
 ##
