@@ -405,6 +405,14 @@ RUN SCC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/boy
     chmod 0755 /usr/local/bin/scc && \
     rm -rf scc.tar.gz
 
+# install tldr client
+RUN TLDR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tldr-pages/tlrc/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo tldr.tar.gz https://github.com/tldr-pages/tlrc/releases/download/v${TLDR_VERSION}/tlrc-v${TLDR_VERSION}-${OS_ARCH2}-unknown-linux-musl.tar.gz && \
+    tar xzf tldr.tar.gz tldr && \
+    mv ./tldr /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/tldr && \
+    rm -rf tldr.tar.gz
+
 # install .net sdk
 # RUN DOTNETSDK_VERSION="8.0.404" && \
 #     DOTNET_ARCH="x64" && \
