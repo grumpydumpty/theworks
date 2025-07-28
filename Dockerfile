@@ -449,5 +449,15 @@ RUN TLDR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tl
 # switch back to non-root user
 USER ${USER}:${GROUP}
 
+# set working directory (set in base:dev image)
+#WORKDIR /workspace
+
+# set entrypoint
+# use this for tool-specific containers e.g. hugo, packer, terraform
+#ENTRYPOINT [ "/usr/local/bin/hugo" ]
+
+# set default command (set in base:dev image)
+#CMD ["/usr/bin/bash", "--login", "-c" ]
+
 #############################################################################
 # vim: ft=unix sync=dockerfile ts=4 sw=4 et tw=78:
