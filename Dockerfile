@@ -413,6 +413,9 @@ RUN TLDR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tl
     chmod 0755 /usr/local/bin/tldr && \
     rm -rf tldr.tar.gz
 
+# install chroma
+# https://github.com/alecthomas/chroma/releases/download/v2.19.0/chroma-2.19.0-linux-amd64.tar.gz
+
 # install oama
 # RUN OAMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/pdobsan/oama/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
 #     curl -skSLo oama.tar.gz https://github.com/pdobsan/oama/releases/download/${OAMA_VERSION}/oama-${OAMA_VERSION}-Linux-${OS_ARCH2}.tar.gz && \
