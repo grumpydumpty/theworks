@@ -12,7 +12,9 @@ mkdocs-swagger-ui-tag
 neoteroi-mkdocs
 #############################################################################
 ## textualize.io apps
+## markdown renderer
 #frogmouth
+## TUI ebook reader
 #baca
 ## ranger file manager
 #ranger-fm
