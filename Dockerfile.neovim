@@ -1,0 +1,136 @@
+FROM photon:5.0
+
+# set argument defaults
+ARG OS_ARCH="amd64"
+ARG OS_ARCH2="x86_64"
+ARG USER=vlabs
+ARG GROUP=users
+
+# set locale
+ENV LANGUAGE=en_US
+ENV LANG=en_US.UTF-8
+
+# update repositories, install packages, and then clean up
+RUN tdnf update -y && \
+    tdnf install -y glibc-i18n && \
+    echo "en_US.UTF-8 UTF-8" > /etc/locale-gen.conf && \
+    locale-gen.sh && \
+    # grab what we can via standard packages
+    tdnf install -y \
+        bash \
+        bindutils \
+        ca-certificates \
+        coreutils \
+        curl \
+        diffutils \
+        findutils \
+        gawk \
+        git \
+        gnupg \
+        htop \
+        jq \
+        less \
+        make \
+        mc \
+        ncurses \
+        openssh \
+        shadow \
+        tar \
+        tree \
+        tmux \
+        unzip \
+        vim && \
+    # add user/group
+    # groupadd -g ${GROUP_ID} ${GROUP} && \
+    # useradd -u ${USER_ID} -g ${GROUP} -m ${USER} && \
+    useradd -g ${GROUP} -m ${USER} && \
+    # set ownership on home dir
+    chown -R ${USER}:${GROUP} /home/${USER} && \
+    # set permissions
+    chmod 0700 /home/${USER} && \
+    # create /workspace
+    mkdir -p /workspace && \
+    # give new user ownership of /workspace
+    chown -R ${USER}:${GROUP} /workspace && \
+    # set permissions
+    # chmod 0700 /workspace && \
+    # set git config
+    git config --system --add init.defaultBranch "main" && \
+    git config --system --add safe.directory "/workspace"
+
+# install fd
+RUN FD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/sharkdp/fd/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo fd.tar.gz https://github.com/sharkdp/fd/releases/download/v${FD_VERSION}/fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    tar xzf fd.tar.gz && \
+    mv fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu/fd /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/fd && \
+    rm -rf fd.tar.gz fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu
+
+# install ripgrep
+RUN RIPGREP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/BurntSushi/ripgrep/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo ripgrep.tar.gz https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-${OS_ARCH2}-unknown-linux-musl.tar.gz && \
+    tar xzf ripgrep.tar.gz && \
+    mv ripgrep-${RIPGREP_VERSION}-${OS_ARCH2}-unknown-linux-musl/rg /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/rg && \
+    rm -rf ripgrep.tar.gz ripgrep-${RIPGREP_VERSION}-${OS_ARCH2}-unknown-linux-musl
+
+# install fzf
+RUN FZF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/junegunn/fzf/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo fzf.tar.gz https://github.com/junegunn/fzf/releases/download/v${FZF_VERSION}/fzf-${FZF_VERSION}-linux_${OS_ARCH}.tar.gz && \
+    tar xzf fzf.tar.gz && \
+    mv fzf /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/fzf && \
+    rm -rf fzf.tar.gz
+
+# grab lazygit
+RUN LAZYGIT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jesseduffield/lazygit/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo lazygit.tar.gz https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_linux_${OS_ARCH2}.tar.gz && \
+    tar xzf lazygit.tar.gz lazygit && \
+    mv lazygit /usr/local/bin && \
+    chown root:root /usr/local/bin/lazygit && \
+    chmod 0755 /usr/local/bin/lazygit && \
+    rm -f lazygit.tar.gz
+
+# instlall neovim
+RUN NEOVIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/neovim/neovim/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo nvim.tar.gz https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim-linux-x86_64.tar.gz && \
+    tar xzf nvim.tar.gz && \
+    cp -rf nvim-linux-x86_64/bin/* /usr/local/bin && \
+    cp -rf nvim-linux-x86_64/lib/* /usr/local/lib && \
+    cp -rf nvim-linux-x86_64/share/* /usr/local/share && \
+    rm -rf nvim.tar.gz nvim-linux-x86_64/
+
+# setup neovim with nord theme and omarchy config
+RUN cd /home/vlabs/ && \
+    git clone https://github.com/basecamp/omarchy.git && \
+    rm -rf ~/.config/nvim && \
+    mkdir -p ~/.config/nvim/ && \
+    git clone https://github.com/LazyVim/starter ~/.config/nvim && \
+    cp -R omarchy/config/nvim/* ~/.config/nvim/ && \
+    cp omarchy/themes/nord/neovim.lua ~/.config/nvim/lua/plugins/theme.lua && \
+    echo "vim.opt.relativenumber = false" >>~/.config/nvim/lua/config/options.lua && \
+    rm -rf ~/.config/nvim/.git/ omarchy/
+
+# clean up
+RUN tdnf erase -y shadow && \
+    tdnf clean all && \
+    # harden and remove unnecessary packages
+    chown -R root:root /usr/local/bin/ && \
+    chown root:root /var/log && \
+    chmod 0640 /var/log && \
+    chown root:root /usr/lib/ && \
+    chmod 755 /usr/lib/
+
+# set user
+USER ${USER}:${GROUP}
+
+# set working directory
+WORKDIR /workspace
+
+# set default command to bash, do not set an entry point
+# CMD [ "bash", "-l" ]
+
+#############################################################################
+# vim: ft=unix sync=dockerfile ts=4 sw=4 et tw=78:
+
+

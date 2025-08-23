@@ -1,0 +1,89 @@
+FROM alpine:latest
+
+# set argument defaults
+ARG USER=vlabs
+ARG GROUP=users
+
+# update repositories, install packages, and then clean up
+RUN apk add --no-cache --update \
+        alpine-sdk \
+        bash \
+        bind-tools \
+        ca-certificates \
+        font-cascadia-code-nerd \
+        coreutils \
+        curl \
+        diffutils \
+        findutils \
+        fzf \
+        gawk \
+        git \
+        htop \
+        jq \
+        lazygit \
+        less \
+        mc \
+        neovim \
+        ncurses \
+        openssh-client \
+        ripgrep \
+        tar \
+        tree \
+        tmux \
+        unzip && \
+    # add user/group
+    # addgroup ${GROUP} && \
+    adduser -D -s /bin/bash -G ${GROUP} ${USER} && \
+    # set ownership on home dir
+    chown -R ${USER}:${GROUP} /home/${USER} && \
+    # set permissions
+    chmod 0700 /home/${USER} && \
+    # create /workspace
+    mkdir -p /workspace && \
+    # give new user ownership of /workspace
+    chown -R ${USER}:${GROUP} /workspace && \
+    # set permissions
+    # chmod 0700 /workspace && \
+    # set git config
+    git config --system --add init.defaultBranch "main" && \
+    git config --system --add safe.directory "/workspace" && \
+    # harden and remove unnecessary packages
+    chown -R root:root /usr/local/bin/ && \
+    chown root:root /var/log && \
+    chmod 0640 /var/log && \
+    chown root:root /usr/lib/ && \
+    chmod 755 /usr/lib/
+
+##############################################################################
+## setup neovim with nord theme and omarchy config
+#RUN cd /home/${USER}/ && \
+#    git clone https://github.com/basecamp/omarchy.git && \
+#    rm -rf /home/${USER}/.config/nvim && \
+#    mkdir -p /home/${USER}/.config/nvim/ && \
+#    git clone https://github.com/LazyVim/starter /home/${USER}/.config/nvim && \
+#    cp -R omarchy/config/nvim/* /home/${USER}/.config/nvim/ && \
+#    cp omarchy/themes/nord/neovim.lua /home/${USER}/.config/nvim/lua/plugins/theme.lua && \
+#    echo "vim.opt.relativenumber = false" >> /home/${USER}/.config/nvim/lua/config/options.lua && \
+#    rm -rf /home/${USER}/.config/nvim/.git/ omarchy/
+#
+## clean up, harden and remove unnecessary packages
+#RUN chown -R root:root /usr/local/bin/ && \
+#    chown root:root /var/log && \
+#    chmod 0640 /var/log && \
+#    chown root:root /usr/lib/ && \
+#    chmod 755 /usr/lib/
+##############################################################################
+
+# set user
+USER ${USER}:${GROUP}
+
+# set working directory
+WORKDIR /workspace
+
+# set entrypoint to bash
+ENTRYPOINT ["bash"]
+
+#############################################################################
+# vim: ft=unix sync=dockerfile ts=4 sw=4 et tw=78:
+
+
