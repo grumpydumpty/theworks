@@ -32,7 +32,6 @@ RUN apk add --no-cache --update \
         tmux \
         unzip && \
     # add user/group
-    # addgroup ${GROUP} && \
     adduser -D -s /bin/bash -G ${GROUP} ${USER} && \
     # set ownership on home dir
     chown -R ${USER}:${GROUP} /home/${USER} && \
@@ -43,7 +42,7 @@ RUN apk add --no-cache --update \
     # give new user ownership of /workspace
     chown -R ${USER}:${GROUP} /workspace && \
     # set permissions
-    # chmod 0700 /workspace && \
+    chmod 0700 /workspace && \
     # set git config
     git config --system --add init.defaultBranch "main" && \
     git config --system --add safe.directory "/workspace" && \
@@ -53,26 +52,6 @@ RUN apk add --no-cache --update \
     chmod 0640 /var/log && \
     chown root:root /usr/lib/ && \
     chmod 755 /usr/lib/
-
-##############################################################################
-## setup neovim with nord theme and omarchy config
-#RUN cd /home/${USER}/ && \
-#    git clone https://github.com/basecamp/omarchy.git && \
-#    rm -rf /home/${USER}/.config/nvim && \
-#    mkdir -p /home/${USER}/.config/nvim/ && \
-#    git clone https://github.com/LazyVim/starter /home/${USER}/.config/nvim && \
-#    cp -R omarchy/config/nvim/* /home/${USER}/.config/nvim/ && \
-#    cp omarchy/themes/nord/neovim.lua /home/${USER}/.config/nvim/lua/plugins/theme.lua && \
-#    echo "vim.opt.relativenumber = false" >> /home/${USER}/.config/nvim/lua/config/options.lua && \
-#    rm -rf /home/${USER}/.config/nvim/.git/ omarchy/
-#
-## clean up, harden and remove unnecessary packages
-#RUN chown -R root:root /usr/local/bin/ && \
-#    chown root:root /var/log && \
-#    chmod 0640 /var/log && \
-#    chown root:root /usr/lib/ && \
-#    chmod 755 /usr/lib/
-##############################################################################
 
 # set user
 USER ${USER}:${GROUP}

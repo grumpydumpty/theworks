@@ -19,7 +19,7 @@ neoteroi-mkdocs
 ## ranger file manager
 #ranger-fm
 #############################################################################
-## asciinema etc
+## asciinema etc - python asciinema has been replaced in v3.0 by rust version
 asciinema
 asciinema-scene
 #############################################################################

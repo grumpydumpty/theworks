@@ -41,8 +41,6 @@ RUN tdnf update -y && \
         unzip \
         vim && \
     # add user/group
-    # groupadd -g ${GROUP_ID} ${GROUP} && \
-    # useradd -u ${USER_ID} -g ${GROUP} -m ${USER} && \
     useradd -g ${GROUP} -m ${USER} && \
     # set ownership on home dir
     chown -R ${USER}:${GROUP} /home/${USER} && \
@@ -53,7 +51,7 @@ RUN tdnf update -y && \
     # give new user ownership of /workspace
     chown -R ${USER}:${GROUP} /workspace && \
     # set permissions
-    # chmod 0700 /workspace && \
+    chmod 0700 /workspace && \
     # set git config
     git config --system --add init.defaultBranch "main" && \
     git config --system --add safe.directory "/workspace"
@@ -82,7 +80,7 @@ RUN FZF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jun
     chmod 0755 /usr/local/bin/fzf && \
     rm -rf fzf.tar.gz
 
-# grab lazygit
+# install lazygit
 RUN LAZYGIT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jesseduffield/lazygit/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo lazygit.tar.gz https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_linux_${OS_ARCH2}.tar.gz && \
     tar xzf lazygit.tar.gz lazygit && \
@@ -91,7 +89,7 @@ RUN LAZYGIT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com
     chmod 0755 /usr/local/bin/lazygit && \
     rm -f lazygit.tar.gz
 
-# instlall neovim
+# install neovim
 RUN NEOVIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/neovim/neovim/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo nvim.tar.gz https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim-linux-x86_64.tar.gz && \
     tar xzf nvim.tar.gz && \
@@ -101,15 +99,15 @@ RUN NEOVIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
     rm -rf nvim.tar.gz nvim-linux-x86_64/
 
 # setup neovim with nord theme and omarchy config
-RUN cd /home/vlabs/ && \
+RUN cd /home/${USER}/ && \
     git clone https://github.com/basecamp/omarchy.git && \
-    rm -rf ~/.config/nvim && \
-    mkdir -p ~/.config/nvim/ && \
-    git clone https://github.com/LazyVim/starter ~/.config/nvim && \
-    cp -R omarchy/config/nvim/* ~/.config/nvim/ && \
-    cp omarchy/themes/nord/neovim.lua ~/.config/nvim/lua/plugins/theme.lua && \
-    echo "vim.opt.relativenumber = false" >>~/.config/nvim/lua/config/options.lua && \
-    rm -rf ~/.config/nvim/.git/ omarchy/
+    rm -rf .config/nvim && \
+    mkdir -p .config/nvim/ && \
+    git clone https://github.com/LazyVim/starter .config/nvim && \
+    cp -R omarchy/config/nvim/* .config/nvim/ && \
+    cp omarchy/themes/nord/neovim.lua .config/nvim/lua/plugins/theme.lua && \
+    echo "vim.opt.relativenumber = false" >> .config/nvim/lua/config/options.lua && \
+    rm -rf .config/nvim/.git/ omarchy/
 
 # clean up
 RUN tdnf erase -y shadow && \

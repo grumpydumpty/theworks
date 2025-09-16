@@ -172,8 +172,8 @@ RUN TERRAFORMDOCS_VERSION=$(curl -H 'Accept: application/json' -sSL https://gith
     rm -f terraform-docs.tar.gz
 
 # grab terramaid
-#RUN TERRAMAID_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/RoseSecurity/Terramaid/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-RUN TERRAMAID_VERSION=2.0.1 && \
+#RUN TERRAMAID_VERSION=2.0.1 && \
+RUN TERRAMAID_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/RoseSecurity/Terramaid/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo terramaid.tar.gz https://github.com/RoseSecurity/Terramaid/releases/download/v${TERRAMAID_VERSION}/terramaid_linux_${OS_ARCH2}.tar.gz && \
     tar xzf terramaid.tar.gz Terramaid && \
     mv Terramaid /usr/local/bin/terramaid && \
@@ -257,14 +257,19 @@ RUN LAZYDOCKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.
 RUN TINI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/krallin/tini/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo /usr/local/bin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-${OS_ARCH} && \
     chmod 0755 /usr/local/bin/tini
-    
+
 # install hugo
 RUN HUGO_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/gohugoio/hugo/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo hugo.tar.gz https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${HUGO_VARIANT}_${HUGO_VERSION}_linux-${OS_ARCH}.tar.gz && \
-    tar xzf hugo.tar.gz hugo && \    
+    tar xzf hugo.tar.gz hugo && \
     mv hugo /usr/local/bin && \
     chmod 0755 /usr/local/bin/hugo && \
     rm -rf hugo.tar.gz
+
+## install asciinema
+#RUN ASCIINEMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/asciinema/asciinema/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+#    curl -skSLo /usr/local/bin/asciinema https://github.com/asciinema/asciinema/releases/download/v${ASCIINEMA_VERSION}/asciinema-${OS_ARCH2}-unknown-linux-gnu && \
+#    chmod 0755 /usr/local/bin/asciinema
 
 # install termsvg
 RUN TERMSVG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/MrMarble/termsvg/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -273,11 +278,11 @@ RUN TERMSVG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com
     mv termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}/termsvg /usr/local/bin && \
     chmod 0755 /usr/local/bin/termsvg && \
     rm -rf termsvg.tar.gz termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}
-    
+
 # install yq
 RUN YQ_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/mikefarah/yq/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo yq.tar.gz https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_${OS_ARCH}.tar.gz && \
-    tar xzf yq.tar.gz ./yq_linux_${OS_ARCH} && \    
+    tar xzf yq.tar.gz ./yq_linux_${OS_ARCH} && \
     mv yq_linux_${OS_ARCH} /usr/local/bin/yq && \
     chmod 0755 /usr/local/bin/yq && \
     rm -rf yq.tar.gz
