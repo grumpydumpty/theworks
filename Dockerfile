@@ -398,9 +398,9 @@ RUN WTF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/wtf
     mkdir ~/.config/wtf/ && \
     curl -skSLo ~/.config/wtf/config.yml https://raw.githubusercontent.com/wtfutil/wtf/refs/heads/master/_sample_configs/sample_config.yml && \
     tar xzf wtf.tar.gz && \
-    mv wtf_${WTF_VERSION}_linux_${OS_ARCH}/wtfutil /usr/local/bin/ && \
+    mv wtfutil /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/wtfutil && \
-    rm -rf wtf.tar.gz wtf_${WTF_VERSION}_linux_${OS_ARCH}/
+    rm -rf wtf.tar.gz
 
 # install scc (i.e. sloc, cloc, code)
 RUN SCC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/boyter/scc/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
