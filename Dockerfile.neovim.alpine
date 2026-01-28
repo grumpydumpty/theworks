@@ -46,6 +46,8 @@ RUN apk add --no-cache --update \
     # set git config
     git config --system --add init.defaultBranch "main" && \
     git config --system --add safe.directory "/workspace" && \
+    # set ownership on user homedir
+    chown -R ${USER}:${GROUP} /home/${USER} && \
     # harden and remove unnecessary packages
     chown -R root:root /usr/local/bin/ && \
     chown root:root /var/log && \

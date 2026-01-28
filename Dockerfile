@@ -361,11 +361,11 @@ RUN FZF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jun
 
 # install skim
 RUN SKIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/skim-rs/skim/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo skim.tar.gz https://github.com/skim-rs/skim/releases/download/v${SKIM_VERSION}/skim-${OS_ARCH2}-unknown-linux-musl.tgz && \
-    tar xzf skim.tar.gz && \
-    mv sk /usr/local/bin/ && \
+    curl -skSLo skim.tar.xz https://github.com/skim-rs/skim/releases/download/v${SKIM_VERSION}/skim-${OS_ARCH2}-unknown-linux-gnu.tar.xz && \
+    tar xf skim.tar.xz && \
+    mv skim-x86_64-unknown-linux-gnu/sk /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/sk && \
-    rm -rf skim.tar.gz
+    rm -rf skim.tar.xz skim-${OS_ARCH2}-unknown-linux-gnu/
 
 # install dockerfmt
 RUN DOCKERFMT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/reteps/dockerfmt/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -417,6 +417,22 @@ RUN TLDR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tl
     mv ./tldr /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/tldr && \
     rm -rf tldr.tar.gz
+
+# install httprunner client
+RUN HTTPRUNNER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/christianhelle/httprunner/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo httprunner.tar.gz https://github.com/christianhelle/httprunner/releases/download/${HTTPRUNNER_VERSION}/httprunner-linux-${OS_ARCH2}.tar.gz && \
+    tar xzf httprunner.tar.gz httprunner && \
+    mv ./httprunner /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/httprunner && \
+    rm -rf httprunner.tar.gz
+
+# install istioctl
+RUN ISTIOCTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/istio/istio/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo istioctl.tar.gz https://github.com/istio/istio/releases/download/${ISTIOCTL_VERSION}/istioctl-${ISTIOCTL_VERSION}-linux-${OS_ARCH}.tar.gz && \
+    tar xzf istioctl.tar.gz istioctl && \
+    mv ./istioctl /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/istioctl && \
+    rm -rf istioctl.tar.gz
 
 # install chroma
 # https://github.com/alecthomas/chroma/releases/download/v2.19.0/chroma-2.19.0-linux-amd64.tar.gz
@@ -470,4 +486,4 @@ ENTRYPOINT ["tini", "--"]
 CMD [ "bash" ]
 
 #############################################################################
-# vim: ft=unix sync=dockerfile ts=4 sw=4 et tw=78:
+# vim: ft=unix syn=dockerfile ts=4 sw=4 et tw=78:
