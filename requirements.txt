@@ -2,6 +2,7 @@
 ## mkdocs and its pre-reqs
 mkdocs
 mkdocs-material
+mkdocs-material-extensions
 mkdocs-git-authors-plugin
 mkdocs-git-revision-date-localized-plugin
 mkdocs-markdownextradata-plugin
@@ -10,14 +11,20 @@ mkdocs-open-in-new-tab
 mkdocs-rss-plugin
 mkdocs-swagger-ui-tag
 neoteroi-mkdocs
+cairosvg
+pillow
 #############################################################################
 ## textualize.io apps
 ## markdown renderer
 #frogmouth
 ## TUI ebook reader
-#baca
+# baca
 ## ranger file manager
 #ranger-fm
+## tiptop system monitor
+#tiptop
+## Terraform state tool
+#tftui
 #############################################################################
 ## asciinema etc - python asciinema has been replaced in v3.0 by rust version
 asciinema

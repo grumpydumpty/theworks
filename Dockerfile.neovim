@@ -62,7 +62,18 @@ RUN FD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/shar
     tar xzf fd.tar.gz && \
     mv fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu/fd /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/fd && \
+    fd --gen-completions bash > /usr/share/bash-completion/completions/fd && \
+    chmod 0644 /usr/share/bash-completion/completions/fd && \
     rm -rf fd.tar.gz fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu
+
+# install bat
+RUN BAT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/sharkdp/bat/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo bat.tar.gz https://github.com/sharkdp/bat/releases/download/v${BAT_VERSION}/bat-v${BAT_VERSION}-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    tar xzf bat.tar.gz && \
+    mv bat-v${BAT_VERSION}-${OS_ARCH2}-unknown-linux-gnu/bat /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/bat && \
+    bat --completion bash && \
+    rm -rf bat.tar.gz bat-v${BAT_VERSION}-${OS_ARCH2}-unknown-linux-gnu
 
 # install ripgrep
 RUN RIPGREP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/BurntSushi/ripgrep/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -70,6 +81,8 @@ RUN RIPGREP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com
     tar xzf ripgrep.tar.gz && \
     mv ripgrep-${RIPGREP_VERSION}-${OS_ARCH2}-unknown-linux-musl/rg /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/rg && \
+    rg --generate complete-bash > /usr/share/bash-completion/completions/rg && \
+    chmod 0644 /usr/share/bash-completion/completions/rg && \
     rm -rf ripgrep.tar.gz ripgrep-${RIPGREP_VERSION}-${OS_ARCH2}-unknown-linux-musl
 
 # install fzf
@@ -78,7 +91,30 @@ RUN FZF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jun
     tar xzf fzf.tar.gz && \
     mv fzf /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/fzf && \
+    fzf --bash > /usr/share/bash-completion/completions/fzf && \
+    chmod 0644 /usr/share/bash-completion/completions/fzf && \
     rm -rf fzf.tar.gz
+
+# install eza
+RUN EZA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/eza-community/eza/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo eza.tar.gz https://github.com/eza-community/eza/releases/download/v${EZA_VERSION}/eza_${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    tar xzf eza.tar.gz && \
+    mv eza /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/eza && \
+    curl -skSLo /usr/share/bash-completion/completions/eza https://github.com/eza-community/eza/raw/refs/heads/main/completions/bash/eza && \
+    chmod 0644 /usr/share/bash-completion/completions/eza && \
+    rm -rf eza.tar.gz eza_${OS_ARCH2}-unknown-linux-gnu
+
+# install zoxide
+RUN ZOXIDE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/ajeetdsouza/zoxide/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo zoxide.tar.gz https://github.com/ajeetdsouza/zoxide/releases/download/v${ZOXIDE_VERSION}/zoxide-${ZOXIDE_VERSION}-${OS_ARCH2}-unknown-linux-musl.tar.gz && \
+    tar xzf zoxide.tar.gz && \
+    mv zoxide /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/zoxide && \
+    curl -skSLo /usr/share/bash-completion/completions/zoxide https://github.com/ajeetdsouza/zoxide/raw/refs/heads/main/contrib/completions/zoxide.bash && \
+    chmod 0644 /usr/share/bash-completion/completions/zoxide && \
+    eval "$(zoxide init bash)" && \
+    rm -rf zoxide.tar.gz
 
 # install lazygit
 RUN LAZYGIT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jesseduffield/lazygit/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -98,16 +134,28 @@ RUN NEOVIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
     cp -rf nvim-linux-x86_64/share/* /usr/local/share && \
     rm -rf nvim.tar.gz nvim-linux-x86_64/
 
-# setup neovim with nord theme and omarchy config
-RUN cd /home/${USER}/ && \
-    git clone https://github.com/basecamp/omarchy.git && \
-    rm -rf .config/nvim && \
-    mkdir -p .config/nvim/ && \
-    git clone https://github.com/LazyVim/starter .config/nvim && \
-    cp -R omarchy/config/nvim/* .config/nvim/ && \
-    cp omarchy/themes/nord/neovim.lua .config/nvim/lua/plugins/theme.lua && \
-    echo "vim.opt.relativenumber = false" >> .config/nvim/lua/config/options.lua && \
-    rm -rf .config/nvim/.git/ omarchy/
+# # setup tmux, neovim with nord theme and omarchy config
+# RUN cd /home/${USER}/ && \
+#     git clone https://github.com/basecamp/omarchy.git && \
+#     rm -rf .config/nvim && \
+#     mkdir -p .config/nvim/ && \
+#     git clone https://github.com/LazyVim/starter .config/nvim && \
+#     cp omarchy/themes/nord/neovim.lua .config/nvim/lua/plugins/theme.lua && \
+#     echo "vim.opt.relativenumber = false" >> .config/nvim/lua/config/options.lua && \
+#     rm -rf .config/nvim/.git/ omarchy/
+
+#     git clone https://github.com/basecamp/omarchy.git && \
+#     git clone https://github.com/omacom-io/omarchy-pkgs.git && \
+#     git clone https://github.com/basecamp/omarchy.git && \
+#     cp -R omarchy/config/tmux/* .config/tmux/ && \
+
+# RUN cd /home/${USER}/ && \
+#     mkdir -p .tmux/plugins && \
+#     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm && \
+#     echo "set -g @plugin 'tmux-plugins/tpm'" > .tmux.conf && \
+#     echo "set -g @plugin 'tmux-plugins/tmux-sensible'" >> .tmux.conf && \
+#     echo "run '~/.tmux/plugins/tpm/tpm'" >> .tmux.conf && \
+#     rm -rf ~/.tmux/plugins/tpm/.git
 
 # clean up
 RUN tdnf erase -y shadow && \
@@ -132,5 +180,3 @@ WORKDIR /workspace
 
 #############################################################################
 # vim: ft=unix sync=dockerfile ts=4 sw=4 et tw=78:
-
-

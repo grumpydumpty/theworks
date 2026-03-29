@@ -2,7 +2,7 @@
 # build markdown to html
 
 # use mkdocs:dev image
-FROM harbor.sydeng.vmware.com/library/mkdocs:dev AS builder
+FROM mkdocs:dev AS builder
 
 # set work dir
 WORKDIR /workspaces

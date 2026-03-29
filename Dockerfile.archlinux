@@ -1,0 +1,101 @@
+FROM archlinux:base
+
+# set user / group defaults
+ARG USER=vlabs
+ARG GROUP=users
+
+# set locale - primary
+ENV LANG=en_AU.UTF-8
+# set locale - fallbacks
+ENV LANGUAGE=en_AU:en_GB:en_US:en
+ENV TERM=linux
+
+# grab what we can via standard packages
+# update repositories, install packages, and then clean up
+RUN pacman -Syu --needed --noconfirm \
+        bind \
+        btop \
+        diffutils \
+        eza \
+        fzf \
+        git \
+        github-cli \
+        gum \
+        htop \
+        inetutils \
+        jq \
+        lazydocker \
+        lazygit \
+        less \
+        libyaml \
+        luarocks \
+        make \
+        mc \
+        neovim \
+        opencode \
+        openssh \
+        ripgrep \
+        starship \
+        sudo \
+        tldr \
+        tmux \
+        tree \
+        unzip \
+        vim \
+        whois \
+        zoxide && \
+    # add user/group
+    useradd -g ${GROUP} -m ${USER} && \
+    #
+    # # set password
+    # echo "${USER}:password" | chpasswd && \
+    # # add to wheel
+    # usermod -aG wheel ${USER} && \
+    # sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers && \
+    # echo "${USER} ALL=(ALL:ALL) ALL" > /etc/sudoers.d/${USER} && \
+    #
+    # set ownership on home dir
+    chown -R ${USER}:${GROUP} /home/${USER} && \
+    # set permissions
+    chmod 0700 /home/${USER} && \
+    # create /workspace
+    mkdir -p /workspace && \
+    # give new user ownership of /workspace
+    chown -R ${USER}:${GROUP} /workspace && \
+    # set permissions
+    chmod 0700 /workspace && \
+    # set git config
+    #git config --local user.{name|email}
+    #git config --global user.name "Richard Croft" && \
+    #git config --global user.email "arjaycroft@gmail.com" && \
+    git config --system --add init.defaultBranch "main" && \
+    git config --system --add safe.directory "/workspace"
+
+#############################################################################
+## install omaterm and omadots
+#RUN curl -fsSL https://omaterm.org/install | bash
+#RUN curl -fsSL https://install.omacom.io/dots | bash
+RUN curl -fsSL https://raw.githubusercontent.com/grumpydumpty/omaterm/refs/heads/docker/install.sh | HOME=/home/${USER} bash
+
+# clean up
+RUN pacman -Scc && \
+    # set ownership on user homedir
+    chown -R ${USER}:${GROUP} /home/${USER} && \
+    # harden and remove unnecessary packages
+    chown -R root:root /usr/local/bin/ && \
+    chown -R root:root /var/log && \
+    chmod 0640 /var/log && \
+    chown root:root /usr/lib/ && \
+    chmod 755 /usr/lib/
+
+# set user
+USER ${USER}:${GROUP}
+
+# set working directory
+WORKDIR /workspace
+
+# set default command to bash, do not set an entry point
+CMD [ "bash", "-l" ]
+
+#############################################################################
+# vim: ft=unix syn=dockerfile ts=4 sw=4 et tw=78:

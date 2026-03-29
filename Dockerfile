@@ -333,6 +333,8 @@ RUN FD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/shar
     tar xzf fd.tar.gz && \
     mv fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu/fd /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/fd && \
+    fd --gen-completions bash > /usr/share/bash-completion/completions/fd && \
+    chmod 0644 /usr/share/bash-completion/completions/fd && \
     rm -rf fd.tar.gz fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu
 
 # install bat
@@ -341,6 +343,7 @@ RUN BAT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/sha
     tar xzf bat.tar.gz && \
     mv bat-v${BAT_VERSION}-${OS_ARCH2}-unknown-linux-gnu/bat /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/bat && \
+    bat --completion bash && \
     rm -rf bat.tar.gz bat-v${BAT_VERSION}-${OS_ARCH2}-unknown-linux-gnu
 
 # install ripgrep
@@ -349,6 +352,8 @@ RUN RIPGREP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com
     tar xzf ripgrep.tar.gz && \
     mv ripgrep-${RIPGREP_VERSION}-${OS_ARCH2}-unknown-linux-musl/rg /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/rg && \
+    rg --generate complete-bash > /usr/share/bash-completion/completions/rg && \
+    chmod 0644 /usr/share/bash-completion/completions/rg && \
     rm -rf ripgrep.tar.gz ripgrep-${RIPGREP_VERSION}-${OS_ARCH2}-unknown-linux-musl
 
 # install fzf
@@ -357,7 +362,30 @@ RUN FZF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jun
     tar xzf fzf.tar.gz && \
     mv fzf /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/fzf && \
+    fzf --bash > /usr/share/bash-completion/completions/fzf && \
+    chmod 0644 /usr/share/bash-completion/completions/fzf && \
     rm -rf fzf.tar.gz
+
+# install eza
+RUN EZA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/eza-community/eza/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo eza.tar.gz https://github.com/eza-community/eza/releases/download/v${EZA_VERSION}/eza_${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    tar xzf eza.tar.gz && \
+    mv eza /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/eza && \
+    curl -skSLo /usr/share/bash-completion/completions/eza https://github.com/eza-community/eza/raw/refs/heads/main/completions/bash/eza && \
+    chmod 0644 /usr/share/bash-completion/completions/eza && \
+    rm -rf eza.tar.gz eza_${OS_ARCH2}-unknown-linux-gnu
+
+# install zoxide
+RUN ZOXIDE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/ajeetdsouza/zoxide/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo zoxide.tar.gz https://github.com/ajeetdsouza/zoxide/releases/download/v${ZOXIDE_VERSION}/zoxide-${ZOXIDE_VERSION}-${OS_ARCH2}-unknown-linux-musl.tar.gz && \
+    tar xzf zoxide.tar.gz && \
+    mv zoxide /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/zoxide && \
+    curl -skSLo /usr/share/bash-completion/completions/zoxide https://github.com/ajeetdsouza/zoxide/raw/refs/heads/main/contrib/completions/zoxide.bash && \
+    chmod 0644 /usr/share/bash-completion/completions/zoxide && \
+    eval "$(zoxide init bash)" && \
+    rm -rf zoxide.tar.gz
 
 # install skim
 RUN SKIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/skim-rs/skim/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -434,8 +462,101 @@ RUN ISTIOCTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.co
     chmod 0755 /usr/local/bin/istioctl && \
     rm -rf istioctl.tar.gz
 
+# install neovim
+RUN NEOVIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/neovim/neovim/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo nvim.tar.gz https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim-linux-x86_64.tar.gz && \
+    tar xzf nvim.tar.gz && \
+    cp -rf nvim-linux-x86_64/bin/* /usr/local/bin && \
+    cp -rf nvim-linux-x86_64/lib/* /usr/local/lib && \
+    cp -rf nvim-linux-x86_64/share/* /usr/local/share && \
+    rm -rf nvim.tar.gz nvim-linux-x86_64/
+
+# install auth0 cli
+RUN AUTH0_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/auth0/auth0-cli/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo auth0.tar.gz https://github.com/auth0/auth0-cli/releases/download/v${AUTH0_VERSION}/auth0-cli_${AUTH0_VERSION}_Linux_${OS_ARCH2}.tar.gz && \
+    tar xzf auth0.tar.gz auth0 && \
+    mv ./auth0 /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/auth0 && \
+    rm -rf auth0.tar.gz
+
+# install the bitwarden CLI
+RUN BWCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://api.github.com/repos/bitwarden/clients/releases | jq -r '[.[] | select(.tag_name | startswith("cli-"))] | sort_by(.tag_name) | reverse | .[0].tag_name') && \
+    BWCLI_VERSION=${BWCLI_VERSION#"cli-v"} && \
+    curl -skSLo bw.zip https://github.com/bitwarden/clients/releases/download/cli-v${BWCLI_VERSION}/bw-oss-linux-${BWCLI_VERSION}.zip && \
+    unzip bw.zip && \
+    mv ./bw /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/bw && \
+    rm -rf bw.zip
+
+# install the bitwarden Secrets Manager CLI
+RUN BWSCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/bitwarden/sdk-sm/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    BWSCLI_VERSION=${BWSCLI_VERSION#"python-"} && \
+    curl -skSLo bws.zip https://github.com/bitwarden/sdk-sm/releases/download/bws-v${BWSCLI_VERSION}/bws-${OS_ARCH2}-unknown-linux-gnu-${BWSCLI_VERSION}.zip && \
+    unzip bws.zip && \
+    mv ./bws /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/bws && \
+    rm -rf bws.zip
+
+    # install shellcheck
+RUN SHELLCHECK_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/koalaman/shellcheck/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo shellcheck.tar.gz https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.${OS_ARCH2}.tar.gz && \
+    tar xzf shellcheck.tar.gz && \
+    mv shellcheck-v${SHELLCHECK_VERSION}/shellcheck /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/shellcheck && \
+    rm -rf shellcheck.tar.gz shellcheck-v${SHELLCHECK_VERSION}/
+
+# install gum
+RUN GUM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/charmbracelet/gum/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo gum.tar.gz https://github.com/charmbracelet/gum/releases/download/v${GUM_VERSION}/gum_${GUM_VERSION}_Linux_${OS_ARCH2}.tar.gz && \
+    tar xzf gum.tar.gz && \
+    mv gum_${GUM_VERSION}_Linux_${OS_ARCH2}/gum /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/gum && \
+    mv gum_${GUM_VERSION}_Linux_${OS_ARCH2}/completions/gum.bash /usr/share/bash-completion/completions/gum && \
+    chmod 0644 /usr/share/bash-completion/completions/gum && \
+    rm -rf gum.tar.gz gum_${GUM_VERSION}_Linux_${OS_ARCH2}/
+
+# install glow
+RUN GLOW_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/charmbracelet/glow/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo glow.tar.gz https://github.com/charmbracelet/glow/releases/download/v${GLOW_VERSION}/glow_${GLOW_VERSION}_linux_${OS_ARCH2}.tar.gz && \
+    tar xzf glow.tar.gz && \
+    mv glow_${GLOW_VERSION}_Linux_${OS_ARCH2}/glow /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/glow && \
+    mv glow_${GLOW_VERSION}_Linux_${OS_ARCH2}/completions/glow.bash /usr/share/bash-completion/completions/glow && \
+    chmod 0644 /usr/share/bash-completion/completions/glow && \
+    rm -rf glow.tar.gz glow_${GLOW_VERSION}_Linux_${OS_ARCH2}/
+
+# install vhs (requires ttyd and ffmpeg which are pretty large)
+RUN VHS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/charmbracelet/vhs/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo vhs.tar.gz https://github.com/charmbracelet/vhs/releases/download/v${VHS_VERSION}/vhs_${VHS_VERSION}_linux_${OS_ARCH2}.tar.gz && \
+    tar xzf vhs.tar.gz && \
+    mv vhs_${VHS_VERSION}_Linux_${OS_ARCH2}/vhs /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/vhs && \
+    mv vhs_${VHS_VERSION}_Linux_${OS_ARCH2}/completions/vhs.bash /usr/share/bash-completion/completions/vhs && \
+    chmod 0644 /usr/share/bash-completion/completions/vhs && \
+    rm -rf vhs.tar.gz vhs_${VHS_VERSION}_Linux_${OS_ARCH2}/
+
+# install ttyd (only if installing vhs above)
+RUN TTYD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tsl0922/ttyd/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo ttyd https://github.com/tsl0922/ttyd/releases/download/${TTYD_VERSION}/ttyd.${OS_ARCH2} && \
+    mv ttyd /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/ttyd
+
+# install ffmpeg (only if installing vhs above)
+RUN FFMPEG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/BtbN/FFmpeg-Builds/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo ffmpeg.tar.xz https://github.com/BtbN/FFmpeg-Builds/releases/download/${FFMPEG_VERSION}/ffmpeg-master-${FFMPEG_VERSION}-linux64-gpl.tar.xz && \
+    tar xf ffmpeg.tar.xz && \
+    mv ffmpeg-master-${FFMPEG_VERSION}-linux64-gpl/bin/ff* /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/ff* && \
+    mv ffmpeg-master-${FFMPEG_VERSION}-linux64-gpl/presets /usr/local/ && \
+    rm -rf ffmpeg.tar.xz ffmpeg-${OS_ARCH2}-unknown-linux-gnu/
+
 # install chroma
-# https://github.com/alecthomas/chroma/releases/download/v2.19.0/chroma-2.19.0-linux-amd64.tar.gz
+# RUN CHROMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/alecthomas/chroma/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+#     curl -skSLo chroma.tar.gz https://github.com/alecthomas/chroma/releases/download/v${CHROMA_VERSION}/chroma-${CHROMA_VERSION}-linux-${OS_ARCH}.tar.gz && \
+#     tar xzf chroma.tar.gz chroma && \
+#     mv chroma /usr/local/bin/ && \
+#     chmod 0755 /usr/local/bin/chroma && \
+#     rm -rf chroma.tar.gz
 
 # install oama
 # RUN OAMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/pdobsan/oama/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -469,6 +590,17 @@ RUN ISTIOCTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.co
 ## This would make the above steps more consistent and easier to automate.
 ##
 #############################################################################
+
+# clean up
+RUN tdnf clean all && \
+    # set ownership on user homedir
+    chown -R ${USER}:${GROUP} /home/${USER} && \
+    # harden and remove unnecessary packages
+    chown -R root:root /usr/local/bin/ && \
+    chown -R root:root /var/log && \
+    chmod 0640 /var/log && \
+    chown root:root /usr/lib/ && \
+    chmod 0755 /usr/lib/
 
 # switch back to non-root user
 USER ${USER}:${GROUP}
