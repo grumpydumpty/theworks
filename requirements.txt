@@ -37,3 +37,6 @@ present
 #litecli
 #pgcli
 #mycli
+#############################################################################
+## git-related tools
+git-filter-repo
