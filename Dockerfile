@@ -550,6 +550,14 @@ RUN FFMPEG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
     mv ffmpeg-master-${FFMPEG_VERSION}-linux64-gpl/presets /usr/local/ && \
     rm -rf ffmpeg.tar.xz ffmpeg-${OS_ARCH2}-unknown-linux-gnu/
 
+# install mdbook
+RUN MDBOOK_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/rust-lang/mdBook/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo mdbook.tar.gz https://github.com/rust-lang/mdBook/releases/download/v${MDBOOK_VERSION}/mdbook-v${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz && \
+    tar xzf mdbook.tar.gz && \
+    mv mdbook /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/mdbook && \
+    rm -rf mdbook.tar.gz
+
 # install chroma
 # RUN CHROMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/alecthomas/chroma/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
 #     curl -skSLo chroma.tar.gz https://github.com/alecthomas/chroma/releases/download/v${CHROMA_VERSION}/chroma-${CHROMA_VERSION}-linux-${OS_ARCH}.tar.gz && \
