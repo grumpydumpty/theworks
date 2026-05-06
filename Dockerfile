@@ -489,8 +489,9 @@ RUN BWCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://api.github.c
     rm -rf bw.zip
 
 # install the bitwarden Secrets Manager CLI
+# RUN BWSCLI_VERSION="2.0.0" && \
 RUN BWSCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/bitwarden/sdk-sm/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    BWSCLI_VERSION=${BWSCLI_VERSION#"python-"} && \
+    BWSCLI_VERSION=${BWSCLI_VERSION#"rust-"} && \
     curl -skSLo bws.zip https://github.com/bitwarden/sdk-sm/releases/download/bws-v${BWSCLI_VERSION}/bws-${OS_ARCH2}-unknown-linux-gnu-${BWSCLI_VERSION}.zip && \
     unzip bws.zip && \
     mv ./bws /usr/local/bin/ && \
@@ -552,11 +553,19 @@ RUN FFMPEG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
 
 # install mdbook
 RUN MDBOOK_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/rust-lang/mdBook/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo mdbook.tar.gz https://github.com/rust-lang/mdBook/releases/download/v${MDBOOK_VERSION}/mdbook-v${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz && \
+    curl -skSLo mdbook.tar.gz https://github.com/rust-lang/mdBook/releases/download/v${MDBOOK_VERSION}/mdbook-v${MDBOOK_VERSION}-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
     tar xzf mdbook.tar.gz && \
     mv mdbook /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/mdbook && \
     rm -rf mdbook.tar.gz
+
+# install sheets (CLI spreadsheet)
+RUN SHEETS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/maaslalani/sheets/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo sheets.tar.gz https://github.com/maaslalani/sheets/releases/download/v${SHEETS_VERSION}/sheets_Linux_${OS_ARCH2}.tar.gz && \
+    tar xzf sheets.tar.gz && \
+    mv sheets /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/sheets && \
+    rm -rf sheets.tar.gz
 
 # install chroma
 # RUN CHROMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/alecthomas/chroma/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -575,13 +584,22 @@ RUN MDBOOK_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
 #     rm -rf oama.tar.gz oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/
 
 # install .net sdk
-# RUN DOTNETSDK_VERSION="8.0.404" && \
-#     DOTNET_ARCH="x64" && \
-#     curl -skSLo dotnet-sdk.tar.gz https://dotnetcli.azureedge.net/dotnet/Sdk/${DOTNET_SDK_VERSION}/dotnet-sdk-${DOTNET_SDK_VERSION}-linux-${DOTNET_ARCH}.tar.gz && \
-#     mkdir -p /usr/share/dotnet && tar xzf dotnet-sdk.tar.gz -C /usr/share/dotnet && \
-#     export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true && \
-#     export DOTNET_ROOT=/usr/share/dotnet && \
-#     export PATH=$PATH:$DOTNET_ROOT
+RUN DOTNET_SDK_VERSION="10.0.203" && \
+    DOTNET_SDK_ARCH="x64" && \
+    curl -skSLo dotnet-sdk.tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/${DOTNET_SDK_VERSION}/dotnet-sdk-${DOTNET_SDK_VERSION}-linux-${DOTNET_SDK_ARCH}.tar.gz && \
+    mkdir -p /usr/share/dotnet && \
+    chmod 0755 /usr/share/dotnet && \
+    tar xzf dotnet-sdk.tar.gz -C /usr/share/dotnet && \
+    rm -rf dotnet-sdk.tar.gz
+
+    # set .net runtime, sdk, and cli env vars
+# see [.NET environment variables | Microsoft Learn](https://learn.microsoft.com/en-gb/dotnet/core/tools/dotnet-environment-variables)
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
+    DOTNET_HTTPREPL_TELEMETRY_OPTOUT=1 \
+    DOTNET_RUNNING_IN_CONTAINER=1 \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true \
+    DOTNET_ROOT=/usr/share/dotnet \
+    PATH=$PATH:/usr/share/dotnet
 
 # install ctop (not really for running inside containers)
 # RUN CTOP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/bcicen/ctop/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
