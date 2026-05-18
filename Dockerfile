@@ -1,8 +1,10 @@
 FROM base:dev
 
 # set argument defaults
-ARG OS_ARCH="amd64"
-ARG OS_ARCH2="x86_64"
+
+ARG OS_ARCH="arm64"
+ARG OS_ARCH2="arm64"
+ARG OS_ARCH3="aarch64"
 ARG HUGO_VARIANT="hugo_extended"
 ARG VCENTER=10.109.195.161
 ARG USER=vlabs
@@ -219,7 +221,7 @@ RUN TFSEC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/a
 
 # grab trivy (replacing tfsec)
 RUN TRIVY_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/aquasecurity/trivy/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz && \
+    curl -skSLo trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-${OS_ARCH}.tar.gz && \
     tar xzf trivy.tar.gz trivy && \
     mv trivy /usr/local/bin && \
     chown root:root /usr/local/bin/trivy && \
@@ -267,12 +269,14 @@ RUN HUGO_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/go
     rm -rf hugo.tar.gz
 
 ## install asciinema
-#RUN ASCIINEMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/asciinema/asciinema/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-#    curl -skSLo /usr/local/bin/asciinema https://github.com/asciinema/asciinema/releases/download/v${ASCIINEMA_VERSION}/asciinema-${OS_ARCH2}-unknown-linux-gnu && \
-#    chmod 0755 /usr/local/bin/asciinema
+ARG OS_ARCH3=aarch64
+RUN ASCIINEMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/asciinema/asciinema/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+   curl -skSLo /usr/local/bin/asciinema https://github.com/asciinema/asciinema/releases/download/v${ASCIINEMA_VERSION}/asciinema-${OS_ARCH3}-unknown-linux-gnu && \
+   chmod 0755 /usr/local/bin/asciinema
 
 # install termsvg
-RUN TERMSVG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/MrMarble/termsvg/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+# RUN TERMSVG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/MrMarble/termsvg/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+RUN TERMSVG_VERSION=0.10.0 && \
     curl -skSLo termsvg.tar.gz https://github.com/MrMarble/termsvg/releases/download/v${TERMSVG_VERSION}/termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}.tar.gz && \
     tar xzf termsvg.tar.gz termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}/termsvg && \
     mv termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}/termsvg /usr/local/bin && \
@@ -289,7 +293,7 @@ RUN YQ_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/mike
 
 # install marp-cli
 RUN MARP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/marp-team/marp-cli/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo marp.tar.gz https://github.com/marp-team/marp-cli/releases/download/v${MARP_VERSION}/marp-cli-v${MARP_VERSION}-linux.tar.gz && \
+    curl -skSLo marp.tar.gz https://github.com/marp-team/marp-cli/releases/download/v${MARP_VERSION}/marp-cli-v${MARP_VERSION}-linux-${OS_ARCH}.tar.gz && \
     tar xzf marp.tar.gz marp && \
     mv ./marp /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/marp && \
@@ -305,7 +309,7 @@ RUN HUB_TOOL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.co
 
 # install vale cli
 RUN VALE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/errata-ai/vale/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo vale.tar.gz https://github.com/errata-ai/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz && \
+    curl -skSLo vale.tar.gz https://github.com/errata-ai/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_${OS_ARCH}.tar.gz && \
     tar xzf vale.tar.gz vale && \
     mv vale /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/vale && \
@@ -329,32 +333,32 @@ RUN CRICTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
 
 # install fd
 RUN FD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/sharkdp/fd/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo fd.tar.gz https://github.com/sharkdp/fd/releases/download/v${FD_VERSION}/fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    curl -skSLo fd.tar.gz https://github.com/sharkdp/fd/releases/download/v${FD_VERSION}/fd-v${FD_VERSION}-${OS_ARCH3}-unknown-linux-gnu.tar.gz && \
     tar xzf fd.tar.gz && \
-    mv fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu/fd /usr/local/bin/ && \
+    mv fd-v${FD_VERSION}-${OS_ARCH3}-unknown-linux-gnu/fd /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/fd && \
     fd --gen-completions bash > /usr/share/bash-completion/completions/fd && \
     chmod 0644 /usr/share/bash-completion/completions/fd && \
-    rm -rf fd.tar.gz fd-v${FD_VERSION}-${OS_ARCH2}-unknown-linux-gnu
+    rm -rf fd.tar.gz fd-v${FD_VERSION}-${OS_ARCH3}-unknown-linux-gnu
 
 # install bat
 RUN BAT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/sharkdp/bat/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo bat.tar.gz https://github.com/sharkdp/bat/releases/download/v${BAT_VERSION}/bat-v${BAT_VERSION}-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    curl -skSLo bat.tar.gz https://github.com/sharkdp/bat/releases/download/v${BAT_VERSION}/bat-v${BAT_VERSION}-${OS_ARCH3}-unknown-linux-gnu.tar.gz && \
     tar xzf bat.tar.gz && \
-    mv bat-v${BAT_VERSION}-${OS_ARCH2}-unknown-linux-gnu/bat /usr/local/bin/ && \
+    mv bat-v${BAT_VERSION}-${OS_ARCH3}-unknown-linux-gnu/bat /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/bat && \
     bat --completion bash && \
-    rm -rf bat.tar.gz bat-v${BAT_VERSION}-${OS_ARCH2}-unknown-linux-gnu
+    rm -rf bat.tar.gz bat-v${BAT_VERSION}-${OS_ARCH3}-unknown-linux-gnu
 
 # install ripgrep
 RUN RIPGREP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/BurntSushi/ripgrep/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo ripgrep.tar.gz https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-${OS_ARCH2}-unknown-linux-musl.tar.gz && \
+    curl -skSLo ripgrep.tar.gz https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-${OS_ARCH3}-unknown-linux-gnu.tar.gz && \
     tar xzf ripgrep.tar.gz && \
-    mv ripgrep-${RIPGREP_VERSION}-${OS_ARCH2}-unknown-linux-musl/rg /usr/local/bin/ && \
+    mv ripgrep-${RIPGREP_VERSION}-${OS_ARCH3}-unknown-linux-gnu/rg /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/rg && \
     rg --generate complete-bash > /usr/share/bash-completion/completions/rg && \
     chmod 0644 /usr/share/bash-completion/completions/rg && \
-    rm -rf ripgrep.tar.gz ripgrep-${RIPGREP_VERSION}-${OS_ARCH2}-unknown-linux-musl
+    rm -rf ripgrep.tar.gz ripgrep-${RIPGREP_VERSION}-${OS_ARCH3}-unknown-linux-gnu
 
 # install fzf
 RUN FZF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/junegunn/fzf/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -368,17 +372,17 @@ RUN FZF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jun
 
 # install eza
 RUN EZA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/eza-community/eza/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo eza.tar.gz https://github.com/eza-community/eza/releases/download/v${EZA_VERSION}/eza_${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    curl -skSLo eza.tar.gz https://github.com/eza-community/eza/releases/download/v${EZA_VERSION}/eza_${OS_ARCH3}-unknown-linux-gnu.tar.gz && \
     tar xzf eza.tar.gz && \
     mv eza /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/eza && \
     curl -skSLo /usr/share/bash-completion/completions/eza https://github.com/eza-community/eza/raw/refs/heads/main/completions/bash/eza && \
     chmod 0644 /usr/share/bash-completion/completions/eza && \
-    rm -rf eza.tar.gz eza_${OS_ARCH2}-unknown-linux-gnu
+    rm -rf eza.tar.gz
 
 # install zoxide
 RUN ZOXIDE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/ajeetdsouza/zoxide/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo zoxide.tar.gz https://github.com/ajeetdsouza/zoxide/releases/download/v${ZOXIDE_VERSION}/zoxide-${ZOXIDE_VERSION}-${OS_ARCH2}-unknown-linux-musl.tar.gz && \
+    curl -skSLo zoxide.tar.gz https://github.com/ajeetdsouza/zoxide/releases/download/v${ZOXIDE_VERSION}/zoxide-${ZOXIDE_VERSION}-${OS_ARCH3}-unknown-linux-musl.tar.gz && \
     tar xzf zoxide.tar.gz && \
     mv zoxide /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/zoxide && \
@@ -389,11 +393,11 @@ RUN ZOXIDE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
 
 # install skim
 RUN SKIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/skim-rs/skim/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo skim.tar.xz https://github.com/skim-rs/skim/releases/download/v${SKIM_VERSION}/skim-${OS_ARCH2}-unknown-linux-gnu.tar.xz && \
+    curl -skSLo skim.tar.xz https://github.com/skim-rs/skim/releases/download/v${SKIM_VERSION}/skim-${OS_ARCH3}-unknown-linux-gnu.tar.xz && \
     tar xf skim.tar.xz && \
-    mv skim-x86_64-unknown-linux-gnu/sk /usr/local/bin/ && \
+    mv skim-${OS_ARCH3}-unknown-linux-gnu/sk /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/sk && \
-    rm -rf skim.tar.xz skim-${OS_ARCH2}-unknown-linux-gnu/
+    rm -rf skim.tar.xz skim-${OS_ARCH3}-unknown-linux-gnu/
 
 # install dockerfmt
 RUN DOCKERFMT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/reteps/dockerfmt/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -405,16 +409,19 @@ RUN DOCKERFMT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.c
 
 # install atuin
 RUN ATUIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/atuinsh/atuin/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo atuin.tar.gz https://github.com/atuinsh/atuin/releases/download/v${ATUIN_VERSION}/atuin-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    curl -skSLo atuin.tar.gz https://github.com/atuinsh/atuin/releases/download/v${ATUIN_VERSION}/atuin-${OS_ARCH3}-unknown-linux-gnu.tar.gz && \
     tar xzf atuin.tar.gz && \
-    mv atuin-${OS_ARCH2}-unknown-linux-gnu/atuin /usr/local/bin/ && \
+    mv atuin-${OS_ARCH3}-unknown-linux-gnu/atuin /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/atuin && \
-    rm -rf atuin.tar.gz atuin-${OS_ARCH2}-unknown-linux-gnu/
+    rm -rf atuin.tar.gz atuin-${OS_ARCH3}-unknown-linux-gnu/
 
 # install threatcl (threat modelling configuration language with hcl)
-RUN THREATCL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/threatcl/threatcl/releases/latest | jq -r '.id') && \
-    THREATCL_DOWNLOAD_URL=$(curl -H 'Accept: application/json' -sSL https://api.github.com/repos/threatcl/threatcl/releases/${THREATCL_VERSION} |  jq -r '.assets[] | select( .browser_download_url | contains("linux-amd64")) | .browser_download_url') && \
-    curl -skSLo threatcl.tar.gz ${THREATCL_DOWNLOAD_URL} && \
+## RUN THREATCL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/threatcl/threatcl/releases/latest | jq -r '.id') && \
+##     THREATCL_DOWNLOAD_URL=$(curl -H 'Accept: application/json' -sSL https://api.github.com/repos/threatcl/threatcl/releases/${THREATCL_VERSION} |  jq -r '.assets[] | select( .browser_download_url | contains("linux-amd64")) | .browser_download_url') && \
+##     THREATCL_DOWNLOAD_URL=$(curl -H 'Accept: application/json' -sSL https://api.github.com/repos/threatcl/threatcl/releases/${THREATCL_VERSION} |  jq -r '.assets[] | select( .browser_download_url | contains("linux-arm64")) | .browser_download_url') && \
+##     curl -skSLo threatcl.tar.gz ${THREATCL_DOWNLOAD_URL} && \
+RUN THREATCL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/threatcl/threatcl/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo threatcl.tar.gz https://github.com/threatcl/threatcl/releases/download/v${THREATCL_VERSION}/threatcl_${THREATCL_VERSION}_linux_${OS_ARCH}.tar.gz && \
     tar xzf threatcl.tar.gz && \
     mv threatcl /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/threatcl && \
@@ -432,27 +439,27 @@ RUN WTF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/wtf
 
 # install scc (i.e. sloc, cloc, code)
 RUN SCC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/boyter/scc/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo scc.tar.gz https://github.com/boyter/scc/releases/download/v${SCC_VERSION}/scc_Linux_x86_64.tar.gz && \
+    curl -skSLo scc.tar.gz https://github.com/boyter/scc/releases/download/v${SCC_VERSION}/scc_Linux_${OS_ARCH}.tar.gz && \
     tar xzf scc.tar.gz scc && \
     mv ./scc /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/scc && \
     rm -rf scc.tar.gz
 
 # install tldr client
-RUN TLDR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tldr-pages/tlrc/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo tldr.tar.gz https://github.com/tldr-pages/tlrc/releases/download/v${TLDR_VERSION}/tlrc-v${TLDR_VERSION}-${OS_ARCH2}-unknown-linux-musl.tar.gz && \
-    tar xzf tldr.tar.gz tldr && \
-    mv ./tldr /usr/local/bin/ && \
-    chmod 0755 /usr/local/bin/tldr && \
-    rm -rf tldr.tar.gz
+# RUN TLDR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tldr-pages/tlrc/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+#     curl -skSLo tldr.tar.gz https://github.com/tldr-pages/tlrc/releases/download/v${TLDR_VERSION}/tlrc-v${TLDR_VERSION}-${OS_ARCH3}-unknown-linux-musl.tar.gz && \
+#     tar xzf tldr.tar.gz tldr && \
+#     mv ./tldr /usr/local/bin/ && \
+#     chmod 0755 /usr/local/bin/tldr && \
+#     rm -rf tldr.tar.gz
 
 # install httprunner client
-RUN HTTPRUNNER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/christianhelle/httprunner/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo httprunner.tar.gz https://github.com/christianhelle/httprunner/releases/download/${HTTPRUNNER_VERSION}/httprunner-linux-${OS_ARCH2}.tar.gz && \
-    tar xzf httprunner.tar.gz httprunner && \
-    mv ./httprunner /usr/local/bin/ && \
-    chmod 0755 /usr/local/bin/httprunner && \
-    rm -rf httprunner.tar.gz
+# RUN HTTPRUNNER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/christianhelle/httprunner/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+#     curl -skSLo httprunner.tar.gz https://github.com/christianhelle/httprunner/releases/download/${HTTPRUNNER_VERSION}/httprunner-linux-${OS_ARCH2}.tar.gz && \
+#     tar xzf httprunner.tar.gz httprunner && \
+#     mv ./httprunner /usr/local/bin/ && \
+#     chmod 0755 /usr/local/bin/httprunner && \
+#     rm -rf httprunner.tar.gz
 
 # install istioctl
 RUN ISTIOCTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/istio/istio/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -464,12 +471,12 @@ RUN ISTIOCTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.co
 
 # install neovim
 RUN NEOVIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/neovim/neovim/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo nvim.tar.gz https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim-linux-x86_64.tar.gz && \
+    curl -skSLo nvim.tar.gz https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim-linux-${OS_ARCH}.tar.gz && \
     tar xzf nvim.tar.gz && \
-    cp -rf nvim-linux-x86_64/bin/* /usr/local/bin && \
-    cp -rf nvim-linux-x86_64/lib/* /usr/local/lib && \
-    cp -rf nvim-linux-x86_64/share/* /usr/local/share && \
-    rm -rf nvim.tar.gz nvim-linux-x86_64/
+    cp -rf nvim-linux-${OS_ARCH}/bin/* /usr/local/bin && \
+    cp -rf nvim-linux-${OS_ARCH}/lib/* /usr/local/lib && \
+    cp -rf nvim-linux-${OS_ARCH}/share/* /usr/local/share && \
+    rm -rf nvim.tar.gz nvim-linux-${OS_ARCH}/
 
 # install auth0 cli
 RUN AUTH0_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/auth0/auth0-cli/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -492,7 +499,7 @@ RUN BWCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://api.github.c
 # RUN BWSCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/bitwarden/sdk-sm/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
 #     BWSCLI_VERSION=${BWSCLI_VERSION#"rust-"} && \
 RUN BWSCLI_VERSION="2.0.0" && \
-    curl -skSLo bws.zip https://github.com/bitwarden/sdk-sm/releases/download/bws-v${BWSCLI_VERSION}/bws-${OS_ARCH2}-unknown-linux-gnu-${BWSCLI_VERSION}.zip && \
+    curl -skSLo bws.zip https://github.com/bitwarden/sdk-sm/releases/download/bws-v${BWSCLI_VERSION}/bws-${OS_ARCH3}-unknown-linux-gnu-${BWSCLI_VERSION}.zip && \
     7z e bws.zip && \
     mv ./bws /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/bws && \
@@ -500,7 +507,7 @@ RUN BWSCLI_VERSION="2.0.0" && \
 
     # install shellcheck
 RUN SHELLCHECK_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/koalaman/shellcheck/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo shellcheck.tar.gz https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.${OS_ARCH2}.tar.gz && \
+    curl -skSLo shellcheck.tar.gz https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.${OS_ARCH3}.tar.gz && \
     tar xzf shellcheck.tar.gz && \
     mv shellcheck-v${SHELLCHECK_VERSION}/shellcheck /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/shellcheck && \
@@ -538,22 +545,23 @@ RUN VHS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/cha
 
 # install ttyd (only if installing vhs above)
 RUN TTYD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tsl0922/ttyd/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo ttyd https://github.com/tsl0922/ttyd/releases/download/${TTYD_VERSION}/ttyd.${OS_ARCH2} && \
+    curl -skSLo ttyd https://github.com/tsl0922/ttyd/releases/download/${TTYD_VERSION}/ttyd.${OS_ARCH3} && \
     mv ttyd /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/ttyd
 
 # install ffmpeg (only if installing vhs above)
 RUN FFMPEG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/BtbN/FFmpeg-Builds/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo ffmpeg.tar.xz https://github.com/BtbN/FFmpeg-Builds/releases/download/${FFMPEG_VERSION}/ffmpeg-master-${FFMPEG_VERSION}-linux64-gpl.tar.xz && \
+    FFMPEG_OS_ARCH="linuxarm64" && \
+    curl -skSLo ffmpeg.tar.xz https://github.com/BtbN/FFmpeg-Builds/releases/download/${FFMPEG_VERSION}/ffmpeg-master-${FFMPEG_VERSION}-${FFMPEG_OS_ARCH}-gpl.tar.xz && \
     tar xf ffmpeg.tar.xz && \
-    mv ffmpeg-master-${FFMPEG_VERSION}-linux64-gpl/bin/ff* /usr/local/bin/ && \
+    mv ffmpeg-master-${FFMPEG_VERSION}-${FFMPEG_OS_ARCH}-gpl/bin/ff* /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/ff* && \
-    mv ffmpeg-master-${FFMPEG_VERSION}-linux64-gpl/presets /usr/local/ && \
+    mv ffmpeg-master-${FFMPEG_VERSION}-${FFMPEG_OS_ARCH}-gpl/presets /usr/local/ && \
     rm -rf ffmpeg.tar.xz ffmpeg-${OS_ARCH2}-unknown-linux-gnu/
 
 # install mdbook
 RUN MDBOOK_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/rust-lang/mdBook/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo mdbook.tar.gz https://github.com/rust-lang/mdBook/releases/download/v${MDBOOK_VERSION}/mdbook-v${MDBOOK_VERSION}-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    curl -skSLo mdbook.tar.gz https://github.com/rust-lang/mdBook/releases/download/v${MDBOOK_VERSION}/mdbook-v${MDBOOK_VERSION}-${OS_ARCH3}-unknown-linux-musl.tar.gz && \
     tar xzf mdbook.tar.gz && \
     mv mdbook /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/mdbook && \
@@ -561,7 +569,7 @@ RUN MDBOOK_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
 
 # install sheets (CLI spreadsheet)
 RUN SHEETS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/maaslalani/sheets/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo sheets.tar.gz https://github.com/maaslalani/sheets/releases/download/v${SHEETS_VERSION}/sheets_Linux_${OS_ARCH2}.tar.gz && \
+    curl -skSLo sheets.tar.gz https://github.com/maaslalani/sheets/releases/download/v${SHEETS_VERSION}/sheets_Linux_${OS_ARCH}.tar.gz && \
     tar xzf sheets.tar.gz && \
     mv sheets /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/sheets && \
@@ -577,15 +585,15 @@ RUN CHROMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
 
 # install oama
 RUN OAMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/pdobsan/oama/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo oama.tar.gz https://github.com/pdobsan/oama/releases/download/${OAMA_VERSION}/oama-${OAMA_VERSION}-Linux-${OS_ARCH2}.tar.gz && \
-    tar xzf oama.tar.gz oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/oama && \
-    mv oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/oama /usr/local/bin/ && \
+    curl -skSLo oama.tar.gz https://github.com/pdobsan/oama/releases/download/${OAMA_VERSION}/oama-${OAMA_VERSION}-Linux-${OS_ARCH3}.tar.gz && \
+    tar xzf oama.tar.gz oama-${OAMA_VERSION}-Linux-${OS_ARCH3}/oama && \
+    mv oama-${OAMA_VERSION}-Linux-${OS_ARCH3}/oama /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/oama && \
-    rm -rf oama.tar.gz oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/
+    rm -rf oama.tar.gz oama-${OAMA_VERSION}-Linux-${OS_ARCH3}/
 
 # install .net sdk
 RUN DOTNET_SDK_VERSION="10.0.203" && \
-    DOTNET_SDK_ARCH="x64" && \
+    DOTNET_SDK_ARCH="arm64" && \
     curl -skSLo dotnet-sdk.tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/${DOTNET_SDK_VERSION}/dotnet-sdk-${DOTNET_SDK_VERSION}-linux-${DOTNET_SDK_ARCH}.tar.gz && \
     mkdir -p /usr/share/dotnet && \
     chmod 0755 /usr/share/dotnet && \
@@ -604,19 +612,19 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
 # install codex coding agent
 RUN CODEX_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/openai/codex/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     CODEX_VERSION=${CODEX_VERSION#"rust-"} && \
-    curl -skSLo codex.tar.gz https://github.com/openai/codex/releases/download/rust-v${CODEX_VERSION}/codex-${OS_ARCH2}-unknown-linux-musl.tar.gz && \
+    curl -skSLo codex.tar.gz https://github.com/openai/codex/releases/download/rust-v${CODEX_VERSION}/codex-${OS_ARCH3}-unknown-linux-musl.tar.gz && \
     tar xzf codex.tar.gz && \
-    mv codex-x86_64-unknown-linux-musl /usr/local/bin/codex && \
+    mv codex-${OS_ARCH3}-unknown-linux-musl /usr/local/bin/codex && \
     chmod 0755 /usr/local/bin/codex && \
     rm -rf codex.tar.gz
 
 # install fastfetch
 RUN FASTFETCH_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/fastfetch-cli/fastfetch/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo fastfetch.tar.gz https://github.com/fastfetch-cli/fastfetch/releases/download/${FASTFETCH_VERSION}/fastfetch-linux-${OS_ARCH}.tar.gz && \
+    curl -skSLo fastfetch.tar.gz https://github.com/fastfetch-cli/fastfetch/releases/download/${FASTFETCH_VERSION}/fastfetch-linux-${OS_ARCH3}.tar.gz && \
     tar xzf fastfetch.tar.gz && \
-    mv fastfetch-linux-${OS_ARCH}/usr/bin/fastfetch /usr/local/bin/ && \
+    mv fastfetch-linux-${OS_ARCH3}/usr/bin/fastfetch /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/fastfetch && \
-    rm -rf fastfetch.tar.gz fastfetch-linux-${OS_ARCH}/
+    rm -rf fastfetch.tar.gz fastfetch-linux-${OS_ARCH3}/
 
 # install horcrux
 # curl -skSL https://api.github.com/repos/jesseduffield/horcrux/releases/latest | jq '.assets[] | select(.browser_download_url | ascii_downcase | contains("linux") and contains("x86_64") and endswith(".tar.gz")) | .browser_download_url' | xargs curl -skSLo horcrux.tar.gz
