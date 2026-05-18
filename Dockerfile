@@ -489,9 +489,9 @@ RUN BWCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://api.github.c
     rm -rf bw.zip
 
 # install the bitwarden Secrets Manager CLI
-# RUN BWSCLI_VERSION="2.0.0" && \
-RUN BWSCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/bitwarden/sdk-sm/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    BWSCLI_VERSION=${BWSCLI_VERSION#"rust-"} && \
+# RUN BWSCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/bitwarden/sdk-sm/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+#     BWSCLI_VERSION=${BWSCLI_VERSION#"rust-"} && \
+RUN BWSCLI_VERSION="2.0.0" && \
     curl -skSLo bws.zip https://github.com/bitwarden/sdk-sm/releases/download/bws-v${BWSCLI_VERSION}/bws-${OS_ARCH2}-unknown-linux-gnu-${BWSCLI_VERSION}.zip && \
     unzip bws.zip && \
     mv ./bws /usr/local/bin/ && \
@@ -568,20 +568,20 @@ RUN SHEETS_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
     rm -rf sheets.tar.gz
 
 # install chroma
-# RUN CHROMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/alecthomas/chroma/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-#     curl -skSLo chroma.tar.gz https://github.com/alecthomas/chroma/releases/download/v${CHROMA_VERSION}/chroma-${CHROMA_VERSION}-linux-${OS_ARCH}.tar.gz && \
-#     tar xzf chroma.tar.gz chroma && \
-#     mv chroma /usr/local/bin/ && \
-#     chmod 0755 /usr/local/bin/chroma && \
-#     rm -rf chroma.tar.gz
+RUN CHROMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/alecthomas/chroma/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo chroma.tar.gz https://github.com/alecthomas/chroma/releases/download/v${CHROMA_VERSION}/chroma-${CHROMA_VERSION}-linux-${OS_ARCH}.tar.gz && \
+    tar xzf chroma.tar.gz chroma && \
+    mv chroma /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/chroma && \
+    rm -rf chroma.tar.gz
 
 # install oama
-# RUN OAMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/pdobsan/oama/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-#     curl -skSLo oama.tar.gz https://github.com/pdobsan/oama/releases/download/${OAMA_VERSION}/oama-${OAMA_VERSION}-Linux-${OS_ARCH2}.tar.gz && \
-#     tar xzf oama.tar.gz oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/oama && \
-#     mv oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/oama /usr/local/bin/ && \
-#     chmod 0755 /usr/local/bin/oama && \
-#     rm -rf oama.tar.gz oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/
+RUN OAMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/pdobsan/oama/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo oama.tar.gz https://github.com/pdobsan/oama/releases/download/${OAMA_VERSION}/oama-${OAMA_VERSION}-Linux-${OS_ARCH2}.tar.gz && \
+    tar xzf oama.tar.gz oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/oama && \
+    mv oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/oama /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/oama && \
+    rm -rf oama.tar.gz oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/
 
 # install .net sdk
 RUN DOTNET_SDK_VERSION="10.0.203" && \
@@ -592,7 +592,7 @@ RUN DOTNET_SDK_VERSION="10.0.203" && \
     tar xzf dotnet-sdk.tar.gz -C /usr/share/dotnet && \
     rm -rf dotnet-sdk.tar.gz
 
-    # set .net runtime, sdk, and cli env vars
+# set .net runtime, sdk, and cli env vars
 # see [.NET environment variables | Microsoft Learn](https://learn.microsoft.com/en-gb/dotnet/core/tools/dotnet-environment-variables)
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
     DOTNET_HTTPREPL_TELEMETRY_OPTOUT=1 \
@@ -600,6 +600,31 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
     DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true \
     DOTNET_ROOT=/usr/share/dotnet \
     PATH=$PATH:/usr/share/dotnet
+
+# install codex coding agent
+RUN CODEX_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/openai/codex/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    CODEX_VERSION=${CODEX_VERSION#"rust-"} && \
+    curl -skSLo codex.tar.gz https://github.com/openai/codex/releases/download/rust-v${CODEX_VERSION}/codex-${OS_ARCH2}-unknown-linux-musl.tar.gz && \
+    tar xzf codex.tar.gz && \
+    mv codex-x86_64-unknown-linux-musl /usr/local/bin/codex && \
+    chmod 0755 /usr/local/bin/codex && \
+    rm -rf codex.tar.gz
+
+# install fastfetch
+RUN FASTFETCH_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/fastfetch-cli/fastfetch/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo fastfetch.tar.gz https://github.com/fastfetch-cli/fastfetch/releases/download/${FASTFETCH_VERSION}/fastfetch-linux-${OS_ARCH}.tar.gz && \
+    tar xzf fastfetch.tar.gz && \
+    mv fastfetch-linux-${OS_ARCH}/usr/bin/fastfetch /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/fastfetch && \
+    rm -rf fastfetch.tar.gz fastfetch-linux-${OS_ARCH}/
+
+## install invoices
+#RUN INVOICES_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/maaslalani/invoice/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+#    curl -skSLo invoice.tar.gz https://github.com/maaslalani/invoice/releases/download/v${INVOICES_VERSION}/invoice_${INVOICES_VERSION}_linux_${OS_ARCH}.tar.gz && \
+#    tar xzf invoice.tar.gz && \
+#    mv invoice /usr/local/bin/ && \
+#    chmod 0755 /usr/local/bin/invoice && \
+#    rm -rf invoice.tar.gz
 
 # install ctop (not really for running inside containers)
 # RUN CTOP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/bcicen/ctop/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
