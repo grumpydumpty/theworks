@@ -446,19 +446,22 @@ RUN SCC_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/boy
     rm -rf scc.tar.gz
 
 # install tldr client
-# RUN TLDR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tldr-pages/tlrc/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-#     curl -skSLo tldr.tar.gz https://github.com/tldr-pages/tlrc/releases/download/v${TLDR_VERSION}/tlrc-v${TLDR_VERSION}-${OS_ARCH3}-unknown-linux-musl.tar.gz && \
-#     tar xzf tldr.tar.gz tldr && \
-#     mv ./tldr /usr/local/bin/ && \
-#     chmod 0755 /usr/local/bin/tldr && \
-#     rm -rf tldr.tar.gz
+RUN TLDR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/tldr-pages/tlrc/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo tldr.tar.gz https://github.com/tldr-pages/tlrc/releases/download/v${TLDR_VERSION}/tlrc-v${TLDR_VERSION}-${OS_ARCH3}-unknown-linux-gnu.tar.gz && \
+    # curl -skSLo tldr.tar.gz https://github.com/tldr-pages/tlrc/releases/download/v1.13.1/tlrc-v1.13.1-aarch64-unknown-linux-gnu.tar.gz
+    tar xzf tldr.tar.gz tldr && \
+    mv ./tldr /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/tldr && \
+    rm -rf tldr.tar.gz
 
 # install httprunner client
 # RUN HTTPRUNNER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/christianhelle/httprunner/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
 #     curl -skSLo httprunner.tar.gz https://github.com/christianhelle/httprunner/releases/download/${HTTPRUNNER_VERSION}/httprunner-linux-${OS_ARCH2}.tar.gz && \
 #     tar xzf httprunner.tar.gz httprunner && \
 #     mv ./httprunner /usr/local/bin/ && \
+#     mv ./httprunner-tui /usr/local/bin/ && \
 #     chmod 0755 /usr/local/bin/httprunner && \
+#     chmod 0755 /usr/local/bin/httprunner-tui && \
 #     rm -rf httprunner.tar.gz
 
 # install istioctl
