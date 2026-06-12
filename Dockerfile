@@ -41,7 +41,7 @@ RUN pip3 install ansible-core && \
 
 ## grab kubectl vsphere plugins
 # RUN curl -skSLo vsphere-plugin.zip https://${VCENTER}/wcp/plugin/linux-${OS_ARCH}/vsphere-plugin.zip && \
-#     7zip x -o /usr/local vsphere-plugin.zip && \
+#     7z x -o /usr/local vsphere-plugin.zip && \
 #     chown root:root /usr/local/bin/kubectl-vsphere && \
 #     chmod 0755 /usr/local/bin/kubectl-vsphere && \
 #     rm -f vsphere-plugin.zip
@@ -116,7 +116,7 @@ RUN GOMPLATE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.co
 # grab packer
 RUN PACKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo packer.zip https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip && \
-    7zip e packer.zip packer && \
+    7z e packer.zip packer && \
     mv packer /usr/local/bin/ && \
     chown root:root /usr/local/bin/packer && \
     chmod 0755 /usr/local/bin/packer && \
@@ -129,7 +129,7 @@ RUN VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://git
 # grab terraform
 RUN TERRAFORM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/terraform/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${OS_ARCH}.zip && \
-    7zip e terraform.zip terraform && \
+    7z e terraform.zip terraform && \
     mv terraform /usr/local/bin/ && \
     chown root:root /usr/local/bin/terraform && \
     chmod 0755 /usr/local/bin/terraform && \
@@ -138,7 +138,7 @@ RUN TERRAFORM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.c
 # grab nomad
 RUN NOMAD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/nomad/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_${OS_ARCH}.zip && \
-    7zip e nomad.zip nomad && \
+    7z e nomad.zip nomad && \
     mv nomad /usr/local/bin/ && \
     chown root:root /usr/local/bin/nomad && \
     chmod 0755 /usr/local/bin/nomad && \
@@ -147,7 +147,7 @@ RUN NOMAD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/h
 # grab consul
 RUN CONSUL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/consul/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_${OS_ARCH}.zip && \
-    7zip e consul.zip consul && \
+    7z e consul.zip consul && \
     mv consul /usr/local/bin/ && \
     chown root:root /usr/local/bin/consul && \
     chmod 0755 /usr/local/bin/consul && \
@@ -156,7 +156,7 @@ RUN CONSUL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
 # grab vault
 RUN VAULT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/vault/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo vault.zip https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_${OS_ARCH}.zip && \
-    7zip e vault.zip vault && \
+    7z e vault.zip vault && \
     mv vault /usr/local/bin && \
     chown root:root /usr/local/bin/vault && \
     chmod 0755 /usr/local/bin/vault && \
@@ -483,7 +483,7 @@ RUN AUTH0_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/a
 RUN BWCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://api.github.com/repos/bitwarden/clients/releases | jq -r '[.[] | select(.tag_name | startswith("cli-"))] | sort_by(.tag_name) | reverse | .[0].tag_name') && \
     BWCLI_VERSION=${BWCLI_VERSION#"cli-v"} && \
     curl -skSLo bw.zip https://github.com/bitwarden/clients/releases/download/cli-v${BWCLI_VERSION}/bw-oss-linux-${BWCLI_VERSION}.zip && \
-    7zip e bw.zip && \
+    7z e bw.zip && \
     mv ./bw /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/bw && \
     rm -rf bw.zip
@@ -493,7 +493,7 @@ RUN BWCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://api.github.c
 #     BWSCLI_VERSION=${BWSCLI_VERSION#"rust-"} && \
 RUN BWSCLI_VERSION="2.0.0" && \
     curl -skSLo bws.zip https://github.com/bitwarden/sdk-sm/releases/download/bws-v${BWSCLI_VERSION}/bws-${OS_ARCH2}-unknown-linux-gnu-${BWSCLI_VERSION}.zip && \
-    7zip e bws.zip && \
+    7z e bws.zip && \
     mv ./bws /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/bws && \
     rm -rf bws.zip
@@ -617,6 +617,15 @@ RUN FASTFETCH_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.c
     mv fastfetch-linux-${OS_ARCH}/usr/bin/fastfetch /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/fastfetch && \
     rm -rf fastfetch.tar.gz fastfetch-linux-${OS_ARCH}/
+
+# install horcrux
+# curl -skSL https://api.github.com/repos/jesseduffield/horcrux/releases/latest | jq '.assets[] | select(.browser_download_url | ascii_downcase | contains("linux") and contains("x86_64") and endswith(".tar.gz")) | .browser_download_url' | xargs curl -skSLo horcrux.tar.gz
+RUN HORCRUX_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/jesseduffield/horcrux/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo horcrux.tar.gz https://github.com/jesseduffield/horcrux/releases/download/v${HORCRUX_VERSION}/horcrux_${HORCRUX_VERSION}_Linux_${OS_ARCH2}.tar.gz && \
+    tar xzf horcrux.tar.gz horcrux && \
+    mv horcrux /usr/local/bin/ && \
+    chmod 0755 /usr/local/bin/horcrux && \
+    rm -rf horcrux.tar.gz
 
 ## install opencodereview (amd64 / arm64)
 #RUN OPENCODEREVIEW_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/alibaba/open-code-review/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
