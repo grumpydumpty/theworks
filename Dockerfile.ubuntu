@@ -1,4 +1,4 @@
-FROM base:dev
+FROM base:ubuntu
 
 ## set argument defaults
 ARG OS_ARCH="amd64"
@@ -11,36 +11,46 @@ ARG GROUP=users
 ## Switch to root to install OS packages
 USER root:root
 
+# RUN apt-get update && \
+#     apt-get install -y locales && \
+#     rm -rf /var/lib/apt/lists/* && \
+#     localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+# ENV LANG en_US.utf8
+
 ## setup ansible ppa and install ansible-core
-RUN apt install software-properties-common && \
-    add-apt-repository --yes --update ppa:ansible/ansible && \
-    apt install ansible-core
+# RUN apt install software-properties-common && \
+#     add-apt-repository --yes --update ppa:ansible/ansible && \
+#     apt install ansible-core
 
 ## install additional packages
-RUN apt install -y \
-        genisoimage \
+RUN apt update -y && \
+    apt install -y \
+        ansible \
+        #ansible-core \
         nodejs \
         python3 \
-        python3-jinja2 \
-        python3-paramiko \
         python3-pip \
-        python3-yaml \
-        python3-resolvelib \
-        python3-lxml && \
+        python3.14-venv \
+        xorriso && \
     # clean up
     apt clean -y && \
     apt autoremove --purge -y
 
 ## install mkdocs, mkdocs-material, and desired plugins
 COPY ./requirements.txt .
-RUN pip3 install --no-cache-dir --upgrade pip && \
+RUN set -xe && \
+    python3 -m venv dev && \
+    . dev/bin/activate && \
+    pip3 install --no-cache-dir --upgrade pip && \
     pip3 install --no-cache-dir -r ./requirements.txt && \
     rm requirements.txt
 
+ENV PATH="/app/dev/bin:$PATH"
+
 ### install ansible
-RUN pip3 install ansible-core && \
-    pip3 install pywinrm[credssp] && \
-    ansible-galaxy collection install ansible.windows
+# RUN pip3 install ansible-core && \
+#     pip3 install pywinrm[credssp] && \
+#     ansible-galaxy collection install ansible.windows
 
 ### grab kubectl vsphere plugins
 # RUN curl -skSLo vsphere-plugin.zip https://${VCENTER}/wcp/plugin/linux-${OS_ARCH}/vsphere-plugin.zip && \
@@ -275,7 +285,8 @@ RUN HUGO_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/go
 #    chmod 0755 /usr/local/bin/asciinema
 
 ## install termsvg
-RUN TERMSVG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/MrMarble/termsvg/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+#RUN TERMSVG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/MrMarble/termsvg/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+RUN TERMSVG_VERSION="0.10.0" && \
     curl -skSLo termsvg.tar.gz https://github.com/MrMarble/termsvg/releases/download/v${TERMSVG_VERSION}/termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}.tar.gz && \
     tar xzf termsvg.tar.gz termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}/termsvg && \
     mv termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}/termsvg /usr/local/bin && \
@@ -387,7 +398,9 @@ RUN ZOXIDE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
     chmod 0755 /usr/local/bin/zoxide && \
     curl -skSLo /usr/share/bash-completion/completions/zoxide https://github.com/ajeetdsouza/zoxide/raw/refs/heads/main/contrib/completions/zoxide.bash && \
     chmod 0644 /usr/share/bash-completion/completions/zoxide && \
-    eval "$(zoxide init bash)" && \
+    tmp=$(zoxide init bash) && \
+    eval "$c" && \
+    # eval "$(zoxide init bash)" && \
     rm -rf zoxide.tar.gz
 
 ## install skim
@@ -415,9 +428,8 @@ RUN ATUIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/a
     rm -rf atuin.tar.gz atuin-${OS_ARCH2}-unknown-linux-gnu/
 
 ## install threatcl (threat modelling configuration language with hcl)
-RUN THREATCL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/threatcl/threatcl/releases/latest | jq -r '.id') && \
-    THREATCL_DOWNLOAD_URL=$(curl -H 'Accept: application/json' -sSL https://api.github.com/repos/threatcl/threatcl/releases/${THREATCL_VERSION} |  jq -r '.assets[] | select( .browser_download_url | contains("linux-amd64")) | .browser_download_url') && \
-    curl -skSLo threatcl.tar.gz ${THREATCL_DOWNLOAD_URL} && \
+RUN THREATCL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/threatcl/threatcl/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo threatcl.tar.gz https://github.com/threatcl/threatcl/releases/download/v${THREATCL_VERSION}/threatcl_${THREATCL_VERSION}_linux_${OS_ARCH}.tar.gz && \
     tar xzf threatcl.tar.gz && \
     mv threatcl /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/threatcl && \
@@ -661,7 +673,9 @@ RUN HORCRUX_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com
 #############################################################################
 
 ## clean up
-RUN tdnf clean all && \
+RUN apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
     # set ownership on user homedir
     chown -R ${USER}:${GROUP} /home/${USER} && \
     # harden and remove unnecessary packages
