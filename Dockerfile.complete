@@ -522,4 +522,4 @@ ENTRYPOINT ["tini", "--"]
 CMD [ "bash" ]
 
 #############################################################################
-# vim: ft=unix sync=dockerfile ts=4 sw=4 et tw=78:
+# vim: ft=unix syn=dockerfile ts=4 sw=4 et tw=78:

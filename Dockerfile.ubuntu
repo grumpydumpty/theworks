@@ -1,4 +1,4 @@
-FROM base:ubuntu
+FROM base:dev
 
 ## set argument defaults
 ARG OS_ARCH="amd64"
@@ -8,7 +8,7 @@ ARG VCENTER=10.109.195.161
 ARG USER=vlabs
 ARG GROUP=users
 
-## Switch to root to install OS packages
+## switch to root to install OS packages
 USER root:root
 
 # RUN apt-get update && \
@@ -23,36 +23,44 @@ USER root:root
 #     apt install ansible-core
 
 ## install additional packages
-RUN apt update -y && \
-    apt install -y \
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
         ansible \
-        #ansible-core \
         nodejs \
+        npm \
         python3 \
         python3-pip \
-        python3.14-venv \
+        python3-venv \
         xorriso && \
     # clean up
-    apt clean -y && \
-    apt autoremove --purge -y
+    apt-get autoremove -y && \
+    apt-get clean -y
+
+# ## install additional python3 packages
+# RUN apt-get install -y \
+#         python3-jinja2 \
+#         python3-paramiko \
+#         python3-yaml \
+#         python3-resolvelib \
+#         python3-lxml
+
+## set python virtual env
+ENV VITRUAL_ENV=/opt/venv
+RUN python3 -m venv ${VITRUAL_ENV}
+ENV PATH="${VITRUAL_ENV}/bin:$PATH"
 
 ## install mkdocs, mkdocs-material, and desired plugins
 COPY ./requirements.txt .
-RUN set -xe && \
-    python3 -m venv dev && \
-    . dev/bin/activate && \
-    pip3 install --no-cache-dir --upgrade pip && \
+RUN pip3 install --no-cache-dir --upgrade pip && \
     pip3 install --no-cache-dir -r ./requirements.txt && \
     rm requirements.txt
 
-ENV PATH="/app/dev/bin:$PATH"
-
-### install ansible
+# ## install ansible
 # RUN pip3 install ansible-core && \
 #     pip3 install pywinrm[credssp] && \
 #     ansible-galaxy collection install ansible.windows
 
-### grab kubectl vsphere plugins
+# ## grab kubectl vsphere plugins
 # RUN curl -skSLo vsphere-plugin.zip https://${VCENTER}/wcp/plugin/linux-${OS_ARCH}/vsphere-plugin.zip && \
 #     7z x -o /usr/local vsphere-plugin.zip && \
 #     chown root:root /usr/local/bin/kubectl-vsphere && \
@@ -135,9 +143,9 @@ RUN PACKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
     chmod 0755 /usr/local/bin/packer && \
     rm -f packer.zip
 
-## grab packer vsphere plugin
-RUN VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer-plugin-vsphere/releases/latest | jq -r '.tag_name') && \
-    packer plugins install github.com/hashicorp/vsphere ${VSPHERE_PLUGIN_VERSION}
+# ## grab packer vsphere plugin
+# RUN VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer-plugin-vsphere/releases/latest | jq -r '.tag_name') && \
+#     packer plugins install github.com/hashicorp/vsphere ${VSPHERE_PLUGIN_VERSION}
 
 ## grab terraform
 RUN TERRAFORM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/terraform/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -398,9 +406,9 @@ RUN ZOXIDE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
     chmod 0755 /usr/local/bin/zoxide && \
     curl -skSLo /usr/share/bash-completion/completions/zoxide https://github.com/ajeetdsouza/zoxide/raw/refs/heads/main/contrib/completions/zoxide.bash && \
     chmod 0644 /usr/share/bash-completion/completions/zoxide && \
-    tmp=$(zoxide init bash) && \
-    eval "$c" && \
     # eval "$(zoxide init bash)" && \
+    ZOXIDE_INIT_CMD="$(zoxide init bash)" && \
+    eval ${ZOXIDE_INIT_CMD} && \
     rm -rf zoxide.tar.gz
 
 ## install skim
@@ -438,7 +446,7 @@ RUN THREATCL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.co
 ## install wtf
 RUN WTF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/wtfutil/wtf/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo wtf.tar.gz https://github.com/wtfutil/wtf/releases/download/v${WTF_VERSION}/wtf_${WTF_VERSION}_linux_${OS_ARCH}.tar.gz && \
-    mkdir ~/.config/wtf/ && \
+    mkdir -p ~/.config/wtf/ && \
     curl -skSLo ~/.config/wtf/config.yml https://raw.githubusercontent.com/wtfutil/wtf/refs/heads/master/_sample_configs/sample_config.yml && \
     tar xzf wtf.tar.gz && \
     mv wtfutil /usr/local/bin/ && \

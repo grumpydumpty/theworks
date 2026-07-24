@@ -11,26 +11,30 @@ ARG GROUP=users
 ## switch to root to install OS packages
 USER root:root
 
+# RUN apt-get update && \
+#     apt-get install -y locales && \
+#     rm -rf /var/lib/apt/lists/* && \
+#     localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+# ENV LANG en_US.utf8
+
+## setup ansible ppa and install ansible-core
+# RUN apt install software-properties-common && \
+#     add-apt-repository --yes --update ppa:ansible/ansible && \
+#     apt install ansible-core
+
 ## install additional packages
-RUN add-apt-repository --yes --update ppa:ansible/ansible && \
-    apt-get update && \
-    apt-get install -y \
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
         ansible \
-        apt-transport-https \
-        curl \
-        git \
-        jq \
         nodejs \
         npm \
         python3 \
         python3-pip \
-        software-properties-common \
-        unzip \
-        wget \
-        whois \
-        xorriso \
-        ca-certificates && \
-        update-ca-certificates
+        python3-venv \
+        xorriso && \
+    # clean up
+    apt-get autoremove -y && \
+    apt-get clean -y
 
 # ## install additional python3 packages
 # RUN apt-get install -y \
@@ -40,18 +44,23 @@ RUN add-apt-repository --yes --update ppa:ansible/ansible && \
 #         python3-resolvelib \
 #         python3-lxml
 
-## install mkdocs, mkdocs-material, and desired plugins
-# COPY ./requirements.txt .
-# RUN pip3 install --no-cache-dir --upgrade pip && \
-#     pip3 install --no-cache-dir -r ./requirements.txt && \
-#     rm requirements.txt
+## set python virtual env
+ENV VITRUAL_ENV=/opt/venv
+RUN python3 -m venv ${VITRUAL_ENV}
+ENV PATH="${VITRUAL_ENV}/bin:$PATH"
 
-# ### install ansible
+## install mkdocs, mkdocs-material, and desired plugins
+COPY ./requirements.txt .
+RUN pip3 install --no-cache-dir --upgrade pip && \
+    pip3 install --no-cache-dir -r ./requirements.txt && \
+    rm requirements.txt
+
+# ## install ansible
 # RUN pip3 install ansible-core && \
 #     pip3 install pywinrm[credssp] && \
 #     ansible-galaxy collection install ansible.windows
 
-### grab kubectl vsphere plugins
+# ## grab kubectl vsphere plugins
 # RUN curl -skSLo vsphere-plugin.zip https://${VCENTER}/wcp/plugin/linux-${OS_ARCH}/vsphere-plugin.zip && \
 #     7z x -o /usr/local vsphere-plugin.zip && \
 #     chown root:root /usr/local/bin/kubectl-vsphere && \
@@ -134,9 +143,9 @@ RUN PACKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
     chmod 0755 /usr/local/bin/packer && \
     rm -f packer.zip
 
-## grab packer vsphere plugin
-RUN VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer-plugin-vsphere/releases/latest | jq -r '.tag_name') && \
-    packer plugins install github.com/hashicorp/vsphere ${VSPHERE_PLUGIN_VERSION}
+# ## grab packer vsphere plugin
+# RUN VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer-plugin-vsphere/releases/latest | jq -r '.tag_name') && \
+#     packer plugins install github.com/hashicorp/vsphere ${VSPHERE_PLUGIN_VERSION}
 
 ## grab terraform
 RUN TERRAFORM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/terraform/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -284,7 +293,8 @@ RUN HUGO_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/go
 #    chmod 0755 /usr/local/bin/asciinema
 
 ## install termsvg
-RUN TERMSVG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/MrMarble/termsvg/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+#RUN TERMSVG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/MrMarble/termsvg/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+RUN TERMSVG_VERSION="0.10.0" && \
     curl -skSLo termsvg.tar.gz https://github.com/MrMarble/termsvg/releases/download/v${TERMSVG_VERSION}/termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}.tar.gz && \
     tar xzf termsvg.tar.gz termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}/termsvg && \
     mv termsvg-${TERMSVG_VERSION}-linux-${OS_ARCH}/termsvg /usr/local/bin && \
@@ -396,7 +406,9 @@ RUN ZOXIDE_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
     chmod 0755 /usr/local/bin/zoxide && \
     curl -skSLo /usr/share/bash-completion/completions/zoxide https://github.com/ajeetdsouza/zoxide/raw/refs/heads/main/contrib/completions/zoxide.bash && \
     chmod 0644 /usr/share/bash-completion/completions/zoxide && \
-    eval "$(zoxide init bash)" && \
+    # eval "$(zoxide init bash)" && \
+    ZOXIDE_INIT_CMD="$(zoxide init bash)" && \
+    eval ${ZOXIDE_INIT_CMD} && \
     rm -rf zoxide.tar.gz
 
 ## install skim
@@ -424,9 +436,8 @@ RUN ATUIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/a
     rm -rf atuin.tar.gz atuin-${OS_ARCH2}-unknown-linux-gnu/
 
 ## install threatcl (threat modelling configuration language with hcl)
-RUN THREATCL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/threatcl/threatcl/releases/latest | jq -r '.id') && \
-    THREATCL_DOWNLOAD_URL=$(curl -H 'Accept: application/json' -sSL https://api.github.com/repos/threatcl/threatcl/releases/${THREATCL_VERSION} |  jq -r '.assets[] | select( .browser_download_url | contains("linux-amd64")) | .browser_download_url') && \
-    curl -skSLo threatcl.tar.gz ${THREATCL_DOWNLOAD_URL} && \
+RUN THREATCL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/threatcl/threatcl/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo threatcl.tar.gz https://github.com/threatcl/threatcl/releases/download/v${THREATCL_VERSION}/threatcl_${THREATCL_VERSION}_linux_${OS_ARCH}.tar.gz && \
     tar xzf threatcl.tar.gz && \
     mv threatcl /usr/local/bin/ && \
     chmod 0755 /usr/local/bin/threatcl && \
@@ -435,7 +446,7 @@ RUN THREATCL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.co
 ## install wtf
 RUN WTF_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/wtfutil/wtf/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo wtf.tar.gz https://github.com/wtfutil/wtf/releases/download/v${WTF_VERSION}/wtf_${WTF_VERSION}_linux_${OS_ARCH}.tar.gz && \
-    mkdir ~/.config/wtf/ && \
+    mkdir -p ~/.config/wtf/ && \
     curl -skSLo ~/.config/wtf/config.yml https://raw.githubusercontent.com/wtfutil/wtf/refs/heads/master/_sample_configs/sample_config.yml && \
     tar xzf wtf.tar.gz && \
     mv wtfutil /usr/local/bin/ && \
@@ -687,9 +698,6 @@ USER ${USER}:${GROUP}
 
 # set working directory (set in base:dev image)
 # WORKDIR /workspace
-
-# # update PATH
-# ENV PATH="$HOME/.local/bin:$PATH"
 
 # set entrypoint
 # use this for tool-specific containers e.g. hugo, packer, terraform
