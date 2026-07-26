@@ -193,7 +193,6 @@ RUN TERRAFORMDOCS_VERSION=$(curl -H 'Accept: application/json' -sSL https://gith
     rm -f terraform-docs.tar.gz
 
 ## grab terramaid
-##RUN TERRAMAID_VERSION=2.0.1 && \
 RUN TERRAMAID_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/RoseSecurity/Terramaid/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo terramaid.tar.gz https://github.com/RoseSecurity/Terramaid/releases/download/v${TERRAMAID_VERSION}/terramaid_linux_${OS_ARCH2}.tar.gz && \
     tar xzf terramaid.tar.gz Terramaid && \
@@ -287,10 +286,10 @@ RUN HUGO_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/go
     chmod 0755 /usr/local/bin/hugo && \
     rm -rf hugo.tar.gz
 
-### install asciinema
-#RUN ASCIINEMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/asciinema/asciinema/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-#    curl -skSLo /usr/local/bin/asciinema https://github.com/asciinema/asciinema/releases/download/v${ASCIINEMA_VERSION}/asciinema-${OS_ARCH2}-unknown-linux-gnu && \
-#    chmod 0755 /usr/local/bin/asciinema
+## install asciinema
+RUN ASCIINEMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/asciinema/asciinema/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo /usr/local/bin/asciinema https://github.com/asciinema/asciinema/releases/download/v${ASCIINEMA_VERSION}/asciinema-${OS_ARCH2}-unknown-linux-gnu && \
+    chmod 0755 /usr/local/bin/asciinema
 
 ## install termsvg
 #RUN TERMSVG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/MrMarble/termsvg/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -487,12 +486,12 @@ RUN ISTIOCTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.co
 
 ## install neovim
 RUN NEOVIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/neovim/neovim/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo nvim.tar.gz https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim-linux-x86_64.tar.gz && \
+    curl -skSLo nvim.tar.gz https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim-linux-${OS_ARCH}.tar.gz && \
     tar xzf nvim.tar.gz && \
-    cp -rf nvim-linux-x86_64/bin/* /usr/local/bin && \
-    cp -rf nvim-linux-x86_64/lib/* /usr/local/lib && \
-    cp -rf nvim-linux-x86_64/share/* /usr/local/share && \
-    rm -rf nvim.tar.gz nvim-linux-x86_64/
+    cp -rf nvim-linux-${OS_ARCH}/bin/* /usr/local/bin && \
+    cp -rf nvim-linux-${OS_ARCH}/lib/* /usr/local/lib && \
+    cp -rf nvim-linux-${OS_ARCH}/share/* /usr/local/share && \
+    rm -rf nvim.tar.gz nvim-linux-${OS_ARCH}/
 
 ## install auth0 cli
 RUN AUTH0_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/auth0/auth0-cli/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -513,7 +512,7 @@ RUN BWCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://api.github.c
 
 ## install the bitwarden Secrets Manager CLI
 # RUN BWSCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/bitwarden/sdk-sm/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-##     BWSCLI_VERSION=${BWSCLI_VERSION#"rust-"} && \
+#     BWSCLI_VERSION=${BWSCLI_VERSION#"rust-"} && \
 RUN BWSCLI_VERSION="2.0.0" && \
     curl -skSLo bws.zip https://github.com/bitwarden/sdk-sm/releases/download/bws-v${BWSCLI_VERSION}/bws-${OS_ARCH2}-unknown-linux-gnu-${BWSCLI_VERSION}.zip && \
     7z e bws.zip && \
@@ -521,7 +520,7 @@ RUN BWSCLI_VERSION="2.0.0" && \
     chmod 0755 /usr/local/bin/bws && \
     rm -rf bws.zip
 
-#    # install shellcheck
+## install shellcheck
 RUN SHELLCHECK_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/koalaman/shellcheck/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo shellcheck.tar.gz https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.${OS_ARCH2}.tar.gz && \
     tar xzf shellcheck.tar.gz && \
@@ -693,20 +692,20 @@ RUN apt-get autoremove -y && \
     chown root:root /usr/lib/ && \
     chmod 0755 /usr/lib/
 
-# switch back to non-root user
+## switch back to non-root user
 USER ${USER}:${GROUP}
 
-# set working directory (set in base:dev image)
+## set working directory (set in base:dev image)
 # WORKDIR /workspace
 
-# set entrypoint
-# use this for tool-specific containers e.g. hugo, packer, terraform
+## set entrypoint
+## use this for tool-specific containers e.g. hugo, packer, terraform
 #ENTRYPOINT [ "/usr/local/bin/hugo" ]
-# or to launch a tiny init process
+## or to launch a tiny init process
 ENTRYPOINT ["tini", "--"]
 
-# set default command (set in base:dev image)
+## set default command (set in base:dev image)
 CMD [ "bash" ]
 
 #############################################################################
-# vim: ft=unix syn=dockerfile ts=4 sw=4 et tw=78:
+## vim: ft=unix syn=dockerfile ts=4 sw=4 et tw=78:
