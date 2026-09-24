@@ -16,11 +16,11 @@ pillow
 #############################################################################
 ## textualize.io apps
 ## markdown renderer
-#frogmouth
+frogmouth
 ## TUI ebook reader
-# baca
+baca
 ## ranger file manager
-#ranger-fm
+ranger-fm
 ## tiptop system monitor
 #tiptop
 ## Terraform state tool

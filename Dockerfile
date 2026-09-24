@@ -649,6 +649,144 @@ RUN HORCRUX_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com
     chmod 0755 /usr/local/bin/horcrux && \
     rm -rf horcrux.tar.gz
 
+#############################################################################
+## grab ghr
+RUN GHR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/chenyukang/ghr/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo ghr.tar.gz https://github.com/chenyukang/ghr/releases/download/v${GHR_VERSION}/ghr-v${GHR_VERSION}-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    tar xzf ghr.tar.gz  && \
+    mv ghr-v${GHR_VERSION}-${OS_ARCH2}-unknown-linux-gnu/ghr /usr/local/bin/ && \
+    chown root:root /usr/local/bin/ghr && \
+    chmod 0755 /usr/local/bin/ghr && \
+    rm -rf ghr.tar.gz ghr-v${GHR_VERSION}-${OS_ARCH2}-unknown-linux-gnu/
+
+#############################################################################
+# ## grab dtop
+# RUN DTOP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/amir20/dtop/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+#     curl -skSLo dtop.tar.gz https://github.com/amir20/dtop/releases/download/v${DTOP_VERSION}/dtop-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+#     tar xzf dtop.tar.gz  && \
+#     mv dtop-${OS_ARCH2}-unknown-linux-gnu/dtop /usr/local/bin/ && \
+#     chown root:root /usr/local/bin/dtop && \
+#     chmod 0755 /usr/local/bin/dtop && \
+#     rm -rf dtop.tar.gz dtop-${OS_ARCH2}-unknown-linux-gnu
+
+#############################################################################
+## grab eilmeldung
+RUN EILMELDUNG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/chenyukang/ghr/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo eilmeldung.tar.gz https://github.com/christo-auer/eilmeldung/releases/download/${EILMELDUNG_VERSION}/eilmeldung-${OS_ARCH2}-unknown-linux-musl-${EILMELDUNG_VERSION}.tar.gz && \
+    tar xzf eilmeldung.tar.gz && \
+    mv eilmeldung/eilmeldung /usr/local/bin/ && \
+    chown root:root /usr/local/bin/eilmeldung && \
+    chmod 0755 /usr/local/bin/eilmeldung && \
+    rm -rf eilmeldung.tar.gz eilmeldung/
+
+#############################################################################
+## grab treemd
+RUN TREEMD_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/Epistates/treemd/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo treemd.tar.gz https://github.com/Epistates/treemd/releases/download/v${TREEMD_VERSION}/treemd-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    tar xzf treemd.tar.gz && \
+    mv treemd-${OS_ARCH2}-unknown-linux-gnu /usr/local/bin/treemd && \
+    chown root:root /usr/local/bin/treemd && \
+    chmod 0755 /usr/local/bin/treemd && \
+    rm -rf treemd.tar.gz
+
+#############################################################################
+## grab lazynginx
+RUN LAZYNGINX_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/giacomomasseron/lazynginx/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo lazynginx.tar.gz https://github.com/giacomomasseron/lazynginx/releases/download/v${LAZYNGINX_VERSION}/lazynginx_${LAZYNGINX_VERSION}_linux_${OS_ARCH}.tar.gz && \
+    tar xzf lazynginx.tar.gz lazynginx && \
+    mv lazynginx /usr/local/bin/ && \
+    chown root:root /usr/local/bin/lazynginx && \
+    chmod 0755 /usr/local/bin/lazynginx && \
+    rm -rf lazynginx.tar.gz
+
+#############################################################################
+## grab slumber
+RUN SLUMBER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/LucasPickering/slumber/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo slumber.tar.xz https://github.com/LucasPickering/slumber/releases/download/v${SLUMBER_VERSION}/slumber-${OS_ARCH2}-unknown-linux-gnu.tar.xz && \
+    tar xf slumber.tar.xz && \
+    mv slumber-${OS_ARCH2}-unknown-linux-gnu/slumber /usr/local/bin/slumber && \
+    chown root:root /usr/local/bin/slumber && \
+    chmod 0755 /usr/local/bin/slumber && \
+    rm -rf slumber.tar.xz slumber-${OS_ARCH2}-unknown-linux-gnu/
+
+#############################################################################
+## grab caps-log
+RUN CAPS_LOG_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/NikolaDucak/caps-log/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo caps-log.tar.gz https://github.com/NikolaDucak/caps-log/releases/download/${CAPS_LOG_VERSION}/caps-log-linux.tar.gz && \
+    tar xzf caps-log.tar.gz && \
+    mv caps-log /usr/local/bin/caps-log && \
+    chown root:root /usr/local/bin/caps-log && \
+    chmod 0755 /usr/local/bin/caps-log && \
+    rm -rf caps-log.tar.gz
+
+#############################################################################
+## grab grv
+RUN GRV_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/rgburke/grv/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo grv https://github.com/rgburke/grv/releases/download/v${GRV_VERSION}/grv_v${GRV_VERSION}_linux64 && \
+    mv grv /usr/local/bin/grv && \
+    chown root:root /usr/local/bin/grv && \
+    chmod 0755 /usr/local/bin/grv
+
+#############################################################################
+## grab nap
+RUN NAP_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/maaslalani/nap/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo nap.tar.gz https://github.com/maaslalani/nap/releases/download/v${NAP_VERSION}/nap_${NAP_VERSION}_linux_${OS_ARCH}.tar.gz && \
+    tar xzf nap.tar.gz nap && \
+    mv nap /usr/local/bin/nap && \
+    chown root:root /usr/local/bin/nap && \
+    chmod 0755 /usr/local/bin/nap && \
+    rm -rf nap.tar.gz
+
+#############################################################################
+## grab otel-tui
+RUN OTEL_TUI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/ymtdzzz/otel-tui/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo otel-tui.tar.gz https://github.com/ymtdzzz/otel-tui/releases/download/v${OTEL_TUI_VERSION}/otel-tui_Linux_${OS_ARCH2}.tar.gz && \
+    tar xzf otel-tui.tar.gz otel-tui && \
+    mv otel-tui /usr/local/bin/ && \
+    chown root:root /usr/local/bin/otel-tui && \
+    chmod 0755 /usr/local/bin/otel-tui && \
+    rm -rf otel-tui.tar.gz
+
+#############################################################################
+## grab lazymqtt
+RUN LAZYMQTT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/ScottFelder/lazymqtt/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo lazymqtt.tar.gz https://github.com/ScottFelder/lazymqtt/releases/download/v${LAZYMQTT_VERSION}/lazymqtt-${OS_ARCH2}-unknown-linux-gnu.tar.gz && \
+    tar xzf lazymqtt.tar.gz lazymqtt && \
+    mv lazymqtt /usr/local/bin/ && \
+    chown root:root /usr/local/bin/lazymqtt && \
+    chmod 0755 /usr/local/bin/lazymqtt && \
+    rm -rf lazymqtt.tar.gz
+
+#############################################################################
+## grab mxr
+# needs: tdnf install -y dbus-libs
+RUN MXR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/planetaryescape/mxr/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo mxr.tar.gz https://github.com/planetaryescape/mxr/releases/download/v${MXR_VERSION}/mxr-v${MXR_VERSION}-linux-${OS_ARCH2}.tar.gz && \
+    tar xzf mxr.tar.gz ./mxr && \
+    mv mxr /usr/local/bin/ && \
+    chown root:root /usr/local/bin/mxr && \
+    chmod 0755 /usr/local/bin/mxr && \
+    rm -rf mxr.tar.gz
+
+#############################################################################
+## grab s3duck
+# this is the stable version
+#RUN S3DUCK_TUI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/nexusriot/s3duck-tui/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+# this is currently pre-release
+RUN S3DUCK_TUI_VERSION="0.1.8" && \
+    curl -skSLo s3duck-tui https://github.com/nexusriot/s3duck-tui/releases/download/${S3DUCK_TUI_VERSION}/s3duck-tui-${S3DUCK_TUI_VERSION}-linux-${OS_ARCH} && \
+    mv s3duck-tui /usr/local/bin/ && \
+    chown root:root /usr/local/bin/s3duck-tui && \
+    chmod 0755 /usr/local/bin/s3duck-tui
+
+#############################################################################
+## grab resterm
+RUN RESTERM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/unkn0wn-root/resterm/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo resterm https://github.com/unkn0wn-root/resterm/releases/download/v${RESTERM_VERSION}/resterm_Linux_${OS_ARCH2} && \
+    mv resterm /usr/local/bin/ && \
+    chown root:root /usr/local/bin/resterm && \
+    chmod 0755 /usr/local/bin/resterm
+
 ### install opencodereview (amd64 / arm64)
 #RUN OPENCODEREVIEW_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/alibaba/open-code-review/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
 #    curl -skSLo ocr https://github.com/alibaba/open-code-review/releases/download/v${OPENCODEREVIEW_VERSION}/opencodereview-linux-${OS_ARCH} && \
