@@ -6,6 +6,7 @@ source scripts/00-env.sh
 # build docker image
 
 # build new docker image
+#    --no-cache                                                                                    \
 docker build                                                                                      \
     -t $IMAGE:$TAG                                                                                \
     --label "$LABEL_PREFIX.version=$VERSION"                                                      \
@@ -19,6 +20,7 @@ docker build                                                                    
     --label "$LABEL_PREFIX.released=$(date "+%Y-%m-%d")"                                          \
     --label "$LABEL_PREFIX.based-on=$IMAGE:$TAG"                                                  \
     --label "$LABEL_PREFIX.project=$PROJECT"                                                      \
+    -f Dockerfile.ubuntu                                                                          \
     .
 
 #############################################################################

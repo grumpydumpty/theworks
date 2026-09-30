@@ -18,7 +18,7 @@ pillow
 ## markdown renderer
 frogmouth
 ## TUI ebook reader
-baca
+#baca
 ## ranger file manager
 ranger-fm
 ## tiptop system monitor
