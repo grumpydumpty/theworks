@@ -511,9 +511,13 @@ RUN BWCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://api.github.c
     rm -rf bw.zip
 
 ## install the bitwarden Secrets Manager CLI
-# RUN BWSCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/bitwarden/sdk-sm/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-#     BWSCLI_VERSION=${BWSCLI_VERSION#"rust-"} && \
-RUN BWSCLI_VERSION="2.0.0" && \
+# RUN BWSCLI_VERSION=$(gh release -R bitwarden/sdk-sm list --json tagName | jq 'sort_by(.tagName) | reverse' | jq -r '[.[] | select(.tagName | startswith("bws-"))] | .[0].tagName') && \
+#     BWSCLI_VERSION=${BWSCLI_VERSION#"bws-v"} && \
+# RUN BWSCLI_VERSION="2.0.0" && \
+RUN BWSCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/bitwarden/sdk-sm/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    BWSCLI_VERSION=${BWSCLI_VERSION#"rust-"} && \
+    BWSCLI_VERSION=${BWSCLI_VERSION#"python-"} && \
+    BWSCLI_VERSION=${BWSCLI_VERSION#"bws-"} && \
     curl -skSLo bws.zip https://github.com/bitwarden/sdk-sm/releases/download/bws-v${BWSCLI_VERSION}/bws-${OS_ARCH2}-unknown-linux-gnu-${BWSCLI_VERSION}.zip && \
     7z e bws.zip && \
     mv ./bws /usr/local/bin/ && \
@@ -806,6 +810,16 @@ RUN RESTERM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com
 #     curl -skSLo ctop https://github.com/bcicen/ctop/releases/download/v${CTOP_VERSION}/ctop-${CTOP_VERSION}-linux-${OS_ARCH} && \
 #     mv ./ctop /usr/local/bin/ && \
 #     chmod 0755 /usr/local/bin/ctop
+
+# install open policy agent
+#
+RUN BINARY_NAME=opa_linux_amd64 && \
+    curl -skSLO https://openpolicyagent.org/downloads/latest/$BINARY_NAME && \
+    curl -skSLO https://openpolicyagent.org/downloads/latest/$BINARY_NAME.sha256 && \
+    sha256sum -c $BINARY_NAME.sha256 && \
+    mv $BINARY_NAME /usr/local/bin/opa && \
+    rm $BINARY_NAME.sha256 && \
+    chmod 0755 /usr/local/bin/opa
 
 #############################################################################
 ##
