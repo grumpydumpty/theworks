@@ -51,6 +51,8 @@ ENV PATH="${VITRUAL_ENV}/bin:$PATH"
 
 ## install mkdocs, mkdocs-material, and desired plugins
 COPY ./requirements.txt .
+# RUN pip3 install --no-cache-dir --upgrade pip && \
+#     pip3 install --no-cache-dir -r ./requirements.txt && \
 RUN pip3 install --no-cache-dir --upgrade pip --trusted-host pypi.org --trusted-host files.pythonhosted.org && \
     pip3 install --no-cache-dir -r ./requirements.txt --trusted-host pypi.org --trusted-host files.pythonhosted.org && \
     rm requirements.txt
@@ -512,9 +514,13 @@ RUN BWCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://api.github.c
     rm -rf bw.zip
 
 ## install the bitwarden Secrets Manager CLI
-# RUN BWSCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/bitwarden/sdk-sm/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-#     BWSCLI_VERSION=${BWSCLI_VERSION#"rust-"} && \
-RUN BWSCLI_VERSION="2.0.0" && \
+# RUN BWSCLI_VERSION=$(gh release -R bitwarden/sdk-sm list --json tagName | jq 'sort_by(.tagName) | reverse' | jq -r '[.[] | select(.tagName | startswith("bws-"))] | .[0].tagName') && \
+#     BWSCLI_VERSION=${BWSCLI_VERSION#"bws-v"} && \
+# RUN BWSCLI_VERSION="2.0.0" && \
+RUN BWSCLI_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/bitwarden/sdk-sm/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    BWSCLI_VERSION=${BWSCLI_VERSION#"rust-"} && \
+    BWSCLI_VERSION=${BWSCLI_VERSION#"python-"} && \
+    BWSCLI_VERSION=${BWSCLI_VERSION#"bws-"} && \
     curl -skSLo bws.zip https://github.com/bitwarden/sdk-sm/releases/download/bws-v${BWSCLI_VERSION}/bws-${OS_ARCH2}-unknown-linux-gnu-${BWSCLI_VERSION}.zip && \
     7z e bws.zip && \
     mv ./bws /usr/local/bin/ && \
@@ -607,7 +613,7 @@ RUN OAMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/pd
     rm -rf oama.tar.gz oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/
 
 ## install .net sdk
-RUN DOTNET_SDK_VERSION="10.0.203" && \
+RUN DOTNET_SDK_VERSION="10.0.402" && \
     DOTNET_SDK_ARCH="x64" && \
     curl -skSLo dotnet-sdk.tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/${DOTNET_SDK_VERSION}/dotnet-sdk-${DOTNET_SDK_VERSION}-linux-${DOTNET_SDK_ARCH}.tar.gz && \
     mkdir -p /usr/share/dotnet && \
@@ -807,6 +813,16 @@ RUN RESTERM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com
 #     curl -skSLo ctop https://github.com/bcicen/ctop/releases/download/v${CTOP_VERSION}/ctop-${CTOP_VERSION}-linux-${OS_ARCH} && \
 #     mv ./ctop /usr/local/bin/ && \
 #     chmod 0755 /usr/local/bin/ctop
+
+# install open policy agent
+#
+RUN BINARY_NAME=opa_linux_amd64 && \
+    curl -skSLO https://openpolicyagent.org/downloads/latest/$BINARY_NAME && \
+    curl -skSLO https://openpolicyagent.org/downloads/latest/$BINARY_NAME.sha256 && \
+    sha256sum -c $BINARY_NAME.sha256 && \
+    mv $BINARY_NAME /usr/local/bin/opa && \
+    rm $BINARY_NAME.sha256 && \
+    chmod 0755 /usr/local/bin/opa
 
 #############################################################################
 ##

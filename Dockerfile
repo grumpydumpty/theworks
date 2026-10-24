@@ -51,8 +51,10 @@ ENV PATH="${VITRUAL_ENV}/bin:$PATH"
 
 ## install mkdocs, mkdocs-material, and desired plugins
 COPY ./requirements.txt .
-RUN pip3 install --no-cache-dir --upgrade pip && \
-    pip3 install --no-cache-dir -r ./requirements.txt && \
+# RUN pip3 install --no-cache-dir --upgrade pip && \
+#     pip3 install --no-cache-dir -r ./requirements.txt && \
+RUN pip3 install --no-cache-dir --upgrade pip --trusted-host pypi.org --trusted-host files.pythonhosted.org && \
+    pip3 install --no-cache-dir -r ./requirements.txt --trusted-host pypi.org --trusted-host files.pythonhosted.org && \
     rm requirements.txt
 
 # ## install ansible
@@ -193,6 +195,7 @@ RUN TERRAFORMDOCS_VERSION=$(curl -H 'Accept: application/json' -sSL https://gith
     rm -f terraform-docs.tar.gz
 
 ## grab terramaid
+##RUN TERRAMAID_VERSION=2.0.1 && \
 RUN TERRAMAID_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/RoseSecurity/Terramaid/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo terramaid.tar.gz https://github.com/RoseSecurity/Terramaid/releases/download/v${TERRAMAID_VERSION}/terramaid_linux_${OS_ARCH2}.tar.gz && \
     tar xzf terramaid.tar.gz Terramaid && \
@@ -486,12 +489,12 @@ RUN ISTIOCTL_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.co
 
 ## install neovim
 RUN NEOVIM_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/neovim/neovim/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo nvim.tar.gz https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim-linux-${OS_ARCH}.tar.gz && \
+    curl -skSLo nvim.tar.gz https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim-linux-${OS_ARCH2}.tar.gz && \
     tar xzf nvim.tar.gz && \
-    cp -rf nvim-linux-${OS_ARCH}/bin/* /usr/local/bin && \
-    cp -rf nvim-linux-${OS_ARCH}/lib/* /usr/local/lib && \
-    cp -rf nvim-linux-${OS_ARCH}/share/* /usr/local/share && \
-    rm -rf nvim.tar.gz nvim-linux-${OS_ARCH}/
+    cp -rf nvim-linux-${OS_ARCH2}/bin/* /usr/local/bin && \
+    cp -rf nvim-linux-${OS_ARCH2}/lib/* /usr/local/lib && \
+    cp -rf nvim-linux-${OS_ARCH2}/share/* /usr/local/share && \
+    rm -rf nvim.tar.gz nvim-linux-${OS_ARCH2}/
 
 ## install auth0 cli
 RUN AUTH0_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/auth0/auth0-cli/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
@@ -610,7 +613,7 @@ RUN OAMA_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/pd
     rm -rf oama.tar.gz oama-${OAMA_VERSION}-Linux-${OS_ARCH2}/
 
 ## install .net sdk
-RUN DOTNET_SDK_VERSION="10.0.203" && \
+RUN DOTNET_SDK_VERSION="10.0.402" && \
     DOTNET_SDK_ARCH="x64" && \
     curl -skSLo dotnet-sdk.tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/${DOTNET_SDK_VERSION}/dotnet-sdk-${DOTNET_SDK_VERSION}-linux-${DOTNET_SDK_ARCH}.tar.gz && \
     mkdir -p /usr/share/dotnet && \
@@ -763,14 +766,14 @@ RUN LAZYMQTT_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.co
 
 #############################################################################
 ## grab mxr
-# needs: tdnf install -y dbus-libs
-RUN MXR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/planetaryescape/mxr/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
-    curl -skSLo mxr.tar.gz https://github.com/planetaryescape/mxr/releases/download/v${MXR_VERSION}/mxr-v${MXR_VERSION}-linux-${OS_ARCH2}.tar.gz && \
-    tar xzf mxr.tar.gz ./mxr && \
-    mv mxr /usr/local/bin/ && \
-    chown root:root /usr/local/bin/mxr && \
-    chmod 0755 /usr/local/bin/mxr && \
-    rm -rf mxr.tar.gz
+## needs: tdnf install -y dbus-libs
+# RUN MXR_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/planetaryescape/mxr/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+#     curl -skSLo mxr.tar.gz https://github.com/planetaryescape/mxr/releases/download/v${MXR_VERSION}/mxr-v${MXR_VERSION}-linux-${OS_ARCH2}.tar.gz && \
+#     tar xzf mxr.tar.gz ./mxr && \
+#     mv mxr /usr/local/bin/ && \
+#     chown root:root /usr/local/bin/mxr && \
+#     chmod 0755 /usr/local/bin/mxr && \
+#     rm -rf mxr.tar.gz
 
 #############################################################################
 ## grab s3duck
